@@ -5,6 +5,8 @@ import socket
 import os
 import tqdm
 import time
+import pyaudio
+
 
 SEPARATOR = "<SEPARATOR>"
 BUFFER_SIZE = 4096
@@ -39,6 +41,17 @@ def send_file(filename, host, port):
     # close the socket
     s.close()
 
+def send_string(text, host, port):
+  # create the client socket
+  s = socket.socket()
+  print(f"[+] Connecting to {host}:{port}")
+  s.connect((host, port))
+  print("[+] Connected.")
+
+  s.send(text.encode())
+  time.sleep(1)
+  s.close()
+
 def send_file_stream(filename, host, port):
     # get the file size
     filesize = os.path.getsize(filename)
@@ -66,13 +79,40 @@ def send_file_stream(filename, host, port):
     # close the socket
     s.close()
 
-def send_string(text, host, port):
-  # create the client socket
-  s = socket.socket()
-  print(f"[+] Connecting to {host}:{port}")
-  s.connect((host, port))
-  print("[+] Connected.")
+def stream_audio_input(host, port):
+    CHUNK_SIZE = 4
+    WIDTH = 2
+    CHANNELS = 2
+    RATE = 44100
 
-  s.send(text.encode())
-  time.sleep(1)
-  s.close()
+    p = pyaudio.PyAudio()
+
+    stream = p.open(format=p.get_format_from_width(WIDTH),
+                    channels=CHANNELS,
+                    rate=RATE,
+                    input=True,
+                    output=True,
+                    frames_per_buffer=CHUNK_SIZE)
+
+    # create the client socket
+    s = socket.socket()
+    print(f"[+] Connecting to {host}:{port}")
+    s.connect((host, port))
+    print("[+] Connected.")
+
+    print("* streaming")
+
+    for i in range(0, int(RATE / CHUNK_SIZE * 5)):
+        data = stream.read(CHUNK_SIZE)
+        # stream.write(data, CHUNK)
+        s.sendall(data)
+
+    print("* done")
+
+    stream.stop_stream()
+    stream.close()
+
+    p.terminate()
+
+    # close the socket
+    s.close()

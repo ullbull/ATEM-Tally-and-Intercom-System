@@ -75,17 +75,17 @@ if __name__ == "__main__":
     args=(stream,),
     daemon=True
     )
-  t_listener_to_keyboard = keyboard.Listener(
+  t_listen_to_keyboard = keyboard.Listener(
       on_press=on_press,
       on_release=on_release)
 
   # Starting threads
   t_listen_to_stream.start()
-  t_listener_to_keyboard.start()
+  t_listen_to_keyboard.start()
 
   # Waiting for threads to finnish
   t_listen_to_stream.join()
-  t_listener_to_keyboard.join()
+  t_listen_to_keyboard.join()
 
   # All threads finished
 
