@@ -6,16 +6,20 @@ import pyaudio
 import threading
 from pynput import keyboard
 
-def callback(in_data, frame_count, time_info, status):
-  return (in_data, pyaudio.paContinue)
 
 def on_press(key):
   global run
   global send
-  # try:
-  #   print(f'alphanumeric key {key.char} pressed')
-  # except AttributeError:
-  #   print(f'special key {key} pressed')
+  global button_down
+  global button_up
+  
+  button_up = None
+
+  try:
+    button_down = key.char
+  except AttributeError:
+    # Special key is pressed
+    button_down = ''
 
   if key == keyboard.Key.shift:
     # Send audio
@@ -25,16 +29,18 @@ def on_press(key):
 def on_release(key):
   global run
   global send
+  global button_down
+  global button_up
 
+  button_down = None
   send = False
-  char = ''
-  try:
-    char = key.char
-  except AttributeError:
-    char = ''
-    
-  # print(f'{key} released')
 
+  try:
+    button_up = key.char
+  except AttributeError:
+    # Special key is released
+    button_up = ''
+    
   if key == keyboard.Key.esc:
     # Stop streaming
     run = False
@@ -52,61 +58,98 @@ def connect(host, port):
 
   return s
 
-def stream_audio(socket, stream):
-  global run
-  global send
-  while run:
-    if send:
-      # data = stream.read(CHUNK_SIZE)
-      s.sendall(stream.read(CHUNK_SIZE, exception_on_overflow = False))
+def send_chunk(chunk):
+  global s
+  global stream
+  s.sendall(stream.read(CHUNK_SIZE, exception_on_overflow = False))
+
+class MyKeyboard():
+  key = None
+  state = 'up'
+
+def action():
+  global button_down
+  global button_up
+  global keybrd
+  global last_keybrd
+  global stream
+
+  # Update button
+  if button_down:
+    keybrd.state = 'down'
+    keybrd.key = button_down
+  elif button_up:
+    keybrd.state = 'up'
+    keybrd.key = button_up
+
+  if keybrd.state != last_keybrd.state:
+    last_keybrd.state = keybrd.state
+    # Keyboard has changed state
+
+    if keybrd.key == 's' and keybrd.state == 'down':
+      print('s down')
+      print(stream)
+
+  if keybrd.key != last_keybrd.key:
+    last_keybrd.key = keybrd.key
+    # Keyboard has changed key
+
+
 
 PORT = 5001
 HOST = '192.168.1.66'
 HOST = '127.0.0.1'
-CHUNK_SIZE = 4
+CHUNK_SIZE = 64
 WIDTH = 2
 CHANNELS = 2
 RATE = 44100
 run = True
 send = False
+button_down = ''
+button_up = ''
+keybrd = MyKeyboard()
+last_keybrd = MyKeyboard()
 
 s = connect(HOST, PORT)
 
 # Create an interface to PortAudio
-p = pyaudio.PyAudio()
+audio = pyaudio.PyAudio()
 
 # Open a stream object
-stream = p.open(format=p.get_format_from_width(WIDTH),
+stream = audio.open(format=audio.get_format_from_width(WIDTH),
                 channels=CHANNELS,
                 rate=RATE,
                 input=True,
                 output=True,
                 frames_per_buffer=CHUNK_SIZE)
 
+print('Press shift to speak.')
+print('Press esc to exit.')
+
 # Create threads
-t_stream_audio = threading.Thread(
-  target=stream_audio,
-  args=(socket, stream,),
-  daemon=True
-  )
 t_listen_to_keyboard = keyboard.Listener(
     on_press=on_press,
     on_release=on_release)
-
-# Start key listener
+  
+# Start threads
 t_listen_to_keyboard.start()
-# Start streaming
-t_stream_audio.start()
 
+# Main loop
+while run:
+  action()
+  if send:
+    if stream.is_stopped():
+      stream.start_stream()
+    send_chunk(CHUNK_SIZE)
+  else:
+    stream.stop_stream()
 
 # Wait for threads to finnish
-t_stream_audio.join()
 t_listen_to_keyboard.join()
 
+# Exit program
 stream.stop_stream()
 stream.close()
-
-p.terminate()
-
+audio.terminate()
 # close the socket
 s.close()

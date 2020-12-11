@@ -9,8 +9,25 @@ import sys
 import pyaudio
 import wave
 import sys
+import readchar
+import threading
 
+exit_char = 'e'
+run = True
+data = 'nothing yet'
+def exit_on_user_input(exit_char):
+    global run
+    global data
+    print(f'Press {exit_char} to exit.')
+    while run:
+        c = readchar.readkey()   
+        if c == exit_char:
+            print('yey')
+            run = False
 
+        if c == 's':
+            print('data:', data)
+        time.sleep(5)
 
 def millis():
   return int(round(time.time() * 1000))
@@ -130,10 +147,11 @@ def receive_chunks(host, port):
     return received_bytes
 
 def play_audio_stream(host, port):
-    CHUNK_SIZE = 4
+    CHUNK_SIZE = 64
     WIDTH = 2
     CHANNELS = 2
     RATE = 44100
+    global run
     
     p = pyaudio.PyAudio()
     stream = p.open(format=p.get_format_from_width(WIDTH),
@@ -165,17 +183,23 @@ def play_audio_stream(host, port):
     # receive using client socket, not server socket
     empty = sys.getsizeof(client_socket.recv(0))
     size = empty + 1
+
+    t_listen_key = threading.Thread(target=exit_on_user_input, args=(exit_char,))
+    t_listen_key.start()
+    # print('1')
+    # while run:
     while size > empty:
         # Receive bytes
         bytes_read = client_socket.recv(CHUNK_SIZE)
         size = sys.getsizeof(bytes_read)
-        
+
         # Play received bytes
         stream.write(bytes_read)
+    # print('2')
+    t_listen_key.join()    
 
     stream.stop_stream()
     stream.close()
-
     p.terminate()
     
     # close the client socket
@@ -183,3 +207,78 @@ def play_audio_stream(host, port):
 
     # close the server socket
     s.close()
+
+def play_audio_stream_2(host, port):
+    CHUNK_SIZE = 64
+    WIDTH = 2
+    CHANNELS = 2
+    RATE = 44100
+    global run
+    
+    p = pyaudio.PyAudio()
+
+
+
+    # create the server socket
+    # TCP socket
+    s = socket.socket()
+
+    # bind the socket to our local address
+    s.bind((host, port))
+
+    # enabling our server to accept connections
+    # 5 here is the number of unaccepted connections that
+    # the system will allow before refusing new connections
+    s.listen(5)
+
+    print(f"[*] Listening as {host}:{port}")
+
+    # accept connection if there is any
+    client_socket, address = s.accept() 
+
+    # if below code is executed, that means the sender is connected
+    print(f"[+] {address} is connected.")
+
+    
+    p = pyaudio.PyAudio()
+
+    stream = p.open(format=p.get_format_from_width(WIDTH),
+                    channels=CHANNELS,
+                    rate=RATE,
+                    output=True)
+
+    stream.start_stream()
+    
+    # receive using client socket, not server socket
+    empty = sys.getsizeof(client_socket.recv(0))
+    size = empty + 1
+    bytes_read = client_socket.recv(CHUNK_SIZE)
+
+    t_listen_key = threading.Thread(target=exit_on_user_input, args=(exit_char,))
+    t_listen_key.start()
+    # print('1')
+    # while run:
+    while size > empty:
+        # Play back bytes
+        stream.write(bytes_read)
+        
+        # Receive bytes
+        bytes_read = client_socket.recv(CHUNK_SIZE)
+        size = sys.getsizeof(bytes_read)
+
+        # time.sleep(0.1)
+
+
+    # print('2')
+    t_listen_key.join()    
+
+    stream.stop_stream()
+    stream.close()
+    
+    # close the client socket
+    client_socket.close()
+
+    # close the server socket
+    s.close()
+
+    p.terminate()
