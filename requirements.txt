@@ -1,0 +1,6 @@
+Cython==0.29.21
+PyAudio==0.2.11
+pynput==1.7.1
+readchar==2.0.1
+six==1.15.0
+tqdm==4.54.1
