@@ -21,9 +21,13 @@ stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
                 channels=wf.getnchannels(),
                 rate=wf.getframerate(),
                 output=True,
+                start=False,
                 stream_callback=callback)
 
+input(f'Hit enter key to play the file {sys.argv[1]}')
 stream.start_stream()
+input('Hit enter key again to stop')
+stream.stop_stream()
 
 while stream.is_active():
     time.sleep(0.1)

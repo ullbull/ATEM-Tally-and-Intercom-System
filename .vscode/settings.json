@@ -1,5 +1,8 @@
 {
   "cSpell.words": [
+    "ASGI",
+    "asyncio",
     "getsizeof"
-  ]
+  ],
+  "python.pythonPath": "environment\\Scripts\\python.exe"
 }
