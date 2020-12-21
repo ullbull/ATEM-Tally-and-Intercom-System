@@ -25,3 +25,27 @@ socketio
 pip install "python-socketio[client]"
 If instead you plan on using the asyncio client, then use this:
 pip install "python-socketio[asyncio_client]"
+
+
+pyaudio on raspberry pi:
+playback file did not work.
+Solution:
+changed chunksize to 4096 in the script.
+(find device 'pulse' and open that in the script) turns out i didn't have to do this step.
+Try to run the script.
+It never works first time.
+Then kill task python and pulseaudio and try script again.
+If it still don't work, repeat try script and kill tasks.
+Should work after a few tries.
+
+Easier solution:
+restart pulseaudio
+pulseaudio -k
+
+playback recorded files on raspberry pi didn't work.
+solution:
+Record files at rate 22050
+set input_device_index=2
+
+sounddevice:
+sounddevice_wire.py -i 0 -o default -b 8192
