@@ -1,16 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ATEM Intercom and Tally System</title>
 
   <link rel="stylesheet" href="./css/bootstrap.min.css">
+
 </head>
+
 <body>
   <h1>Welcome!</h1>
+  <audio id="myAudio" controls>
+    <source src="Alarm10.wav" type="audio/wav">
+    Your browser does not support the audio element.
+  </audio>
+
+  <audio id="autoAudio" autoplay src="Alarm10.wav"></audio>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="./js/main.js"></script>
 </body>
+
 </html>
