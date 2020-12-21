@@ -1,0 +1,27 @@
+{
+  "name": "atem_tally_and_intercom_system",
+  "version": "1.0.0",
+  "description": "Intercom and tally for Blackmagicdesign ATEM switchers",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ullbull/ATEM-Tally-and-Intercom-System.git"
+  },
+  "author": "Ulrik Karlsson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ullbull/ATEM-Tally-and-Intercom-System/issues"
+  },
+  "homepage": "https://github.com/ullbull/ATEM-Tally-and-Intercom-System#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.6",
+    "socket.io": "^3.0.4"
+  }
+}
