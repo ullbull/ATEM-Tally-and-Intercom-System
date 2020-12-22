@@ -2,10 +2,10 @@
 // JavaScript for Browser
 /////////////////////////////
 
+const socket = io();
 $(document).ready(function () {
 
   $(function () {
-    var socket = io();
 
     socket.on("connect", function () {
       console.log("on connect");
