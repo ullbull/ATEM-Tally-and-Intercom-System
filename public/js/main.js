@@ -62,13 +62,7 @@ const withWaveHeader = (data, numberOfChannels, sampleRate) => {
   return concat(header, data);
 };
 
-// const getAudioContext = () => {
-//   AudioContext = window.AudioContext || window.webkitAudioContext;
-//   const audioContext = new AudioContext();
-//   const analyser = audioContext.createAnalyser();
-
-//   return { audioContext, analyser };
-// };
+///////////////////////////////////////
 
 console.log('APA!');
 
@@ -79,27 +73,6 @@ let ac;
 let osc;
 let dest;
 let mediaRecorder;
-
-// function init() {
-//   console.log('init');
-//   ac = new AudioContext();
-//   osc = ac.createOscillator();
-//   dest = ac.createMediaStreamDestination();
-//   mediaRecorder = new MediaRecorder(dest.stream);
-//   osc.connect(dest);
-
-//   mediaRecorder.ondataavailable = function (evt) {
-//     // push each chunk (blobs) in an array
-//     chunks.push(evt.data);
-//   };
-
-//   mediaRecorder.onstop = function (evt) {
-//     // Make blob out of our blobs, and open it.
-//     let blob = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' });
-//     let audioTag = document.createElement('audio');
-//     document.querySelector("audio").src = URL.createObjectURL(blob);
-//   };
-// }
 
 function makeAudio() {
   let blob = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' });
@@ -113,24 +86,6 @@ function makeAudio() {
   // audioTag.play();
 }
 
-// b.addEventListener("click", function (e) {
-//   if (!ac) {
-//     init();
-//   }
-
-//   if (!clicked) {
-//     mediaRecorder.start();
-//     // osc.start(0);
-//     e.target.innerHTML = "Stop recording";
-//     clicked = true;
-//   } else {
-//     mediaRecorder.requestData();
-//     mediaRecorder.stop();
-//     // osc.stop(0);
-//     e.target.disabled = true;
-//   }
-// });
-
 function sendData(type, payload) {
   socket.emit(type, payload);
 }
@@ -138,28 +93,6 @@ function sendData(type, payload) {
 socket.on('message', message => {
   console.log(message);
 });
-
-// let done = false;
-// ss(socket).on('track-stream', (stream, { stat }) => {
-//   stream.on('data', (data) => {
-//     console.log('chunks length:', chunks.length);
-//     if (!done) {
-//       chunks.push(data);
-//     }
-
-
-//     if (chunks.length > 2) {
-//       console.log('end')
-
-//       let blob = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' });
-//       audio1.src = URL.createObjectURL(blob);
-//       audio1.play();
-
-//       done = true;
-//       chunks.length = 0;
-//     }
-//   });
-// });
 
 
 /////////////////////////////
@@ -186,8 +119,6 @@ const loadFile = () => new Promise(async (resolve, reject) => {
 
    const playWhileLoading = (duration = 0) => {
      source.connect(audioContext.destination);
-    //  source.connect(gainNode);
-    //  source.connect(analyser);
      source.start(0, duration);
      activeSource = source;
    };
@@ -252,56 +183,6 @@ const loadFile = () => new Promise(async (resolve, reject) => {
 
 
 ////////////////////////////
-
-
-// const { audioContext, analyser } = getAudioContext();
-// let source = null;
-
-// const loadFile = ({ frequencyC, sinewaveC }, styles, onLoadProcess) =>
-//   new Promise(async (resolve, reject) => {
-//     socket.emit('track', () => { });
-//     ss(socket).on('track-stream', (stream, { stat }) => {
-//       stream.on('data', async (data) => {
-
-        
-        
-//         const audioBufferChunk = await audioContext.decodeAudioData(withWaveHeader(data, 2, 44100));
-//         source = audioContext.createBufferSource();
-//         source.buffer = audioBufferChunk;
-        
-//         // calculate loading process rate
-//         const loadRate = (data.length * 100) / stat.size;
-//         // here duration of track
-//         const duration = (100 / loadRate) * audioBufferChunk.duration;
-        
-//         const newaudioBuffer = (source && source.buffer)
-//         ? appendBuffer(source.buffer, audioBufferChunk, audioContext)
-//         : audioBufferChunk;
-//         source = audioContext.createBufferSource();
-//         source.buffer = newaudioBuffer;
-
-//         source.connect(audioContext.destination);
-//         // source.start(source.buffer.duration);
-//       })
-//     })
-
-//     let startAt = 1
-//     const whileLoadingInterval = setInterval(() => {
-//       if(startAt) {
-//         const inSec = (Date.now() - startAt) / 1000;
-//         if (playWhileLoadingDuration && inSec >= playWhileLoadingDuration) {
-//           playWhileLoading(playWhileLoadingDuration);
-//           playWhileLoadingDuration = source.buffer.duration
-//         }
-//       } else if(source) {
-//         playWhileLoadingDuration = source.buffer.duration;
-//         startAt = Date.now();
-//         playWhileLoading();
-//       }
-//      }, 500);
-
-//   });
-
 
 loadFile();
 
