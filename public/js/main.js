@@ -174,7 +174,6 @@ const getAudioContext =  () => {
 
 const loadFile = () => new Promise(async (resolve, reject) => {
  try {
-  //  const { changeAudionState, setDuration } = props;
    let source = null;
    let playWhileLoadingDuration = 0;
    let startAt = 0;
@@ -185,15 +184,12 @@ const loadFile = () => new Promise(async (resolve, reject) => {
    const { audioContext, analyser } = getAudioContext();
    const gainNode = audioContext.createGain();
 
-
    const playWhileLoading = (duration = 0) => {
      source.connect(audioContext.destination);
-     source.connect(gainNode);
-     source.connect(analyser);
+    //  source.connect(gainNode);
+    //  source.connect(analyser);
      source.start(0, duration);
      activeSource = source;
-    //  drawFrequency();
-    //  drawSinewave();
    };
 
    const play = (resumeTime = 0) => {
@@ -202,15 +198,7 @@ const loadFile = () => new Promise(async (resolve, reject) => {
      source.buffer = audioBuffer;
 
      source.connect(audioContext.destination);
-
-     source.connect(gainNode);
-     gainNode.connect(audioContext.destination);
-
-     source.connect(analyser);
      source.start(0, resumeTime);
-
-    //  drawFrequency();
-    //  drawSinewave();
    };
 
    const whileLoadingInterval = setInterval(() => {
@@ -228,10 +216,8 @@ const loadFile = () => new Promise(async (resolve, reject) => {
    }, 500);
 
    const stop = () => source && source.stop(0);
-   const setVolume = (level) =>
-     gainNode.gain.setValueAtTime(level, audioContext.currentTime);
 
-   // load file while socket
+   // load file
    socket.emit('track', (e) => {});
    ss(socket).on('track-stream', (stream, { stat }) => {
      let rate = 0;
@@ -254,14 +240,9 @@ const loadFile = () => new Promise(async (resolve, reject) => {
          const inSec = (Date.now() - startAt) / 1000;
          activeSource.stop();
          play(inSec);
-         resolve({ play, stop, setVolume });
+         resolve({ play, stop});
        }
        isData = true;
-       // first time load
-       if(isData && rate === loadRate) {
-         const duration = (100 / loadRate) * audioBufferChunk.duration;
-        //  setDuration(duration)
-       }
      });
    });
  } catch (e) {
