@@ -1,6 +1,7 @@
 const socket = io();
 const testButton = document.getElementById('testButton');
 const makeButton = document.getElementById('makeButton');
+const audio = document.getElementById('autoAudio');
 const audio1 = document.getElementById('audio1');
 
 const concat = (buffer1, buffer2) => {
@@ -97,7 +98,7 @@ socket.on('message', message => {
 
 /////////////////////////////
 
-const getAudioContext =  () => {
+const getAudioContext = () => {
   AudioContext = window.AudioContext || window.webkitAudioContext;
   const audioContext = new AudioContext();
   const analyser = audioContext.createAnalyser();
@@ -106,93 +107,118 @@ const getAudioContext =  () => {
 };
 
 const loadFile = () => new Promise(async (resolve, reject) => {
- try {
-   let source = null;
-   let playWhileLoadingDuration = 0;
-   let startAt = 0;
-   let audioBuffer = null;
-   let activeSource = null;
+  try {
+    let source = null;
+    let playWhileLoadingDuration = 0;
+    let startAt = 0;
+    let audioBuffer = null;
+    let activeSource = null;
 
-   // create audio context
-   const { audioContext, analyser } = getAudioContext();
-   const gainNode = audioContext.createGain();
+    // create audio context
+    const { audioContext, analyser } = getAudioContext();
+    const gainNode = audioContext.createGain();
 
-   const playWhileLoading = (duration = 0) => {
-     source.connect(audioContext.destination);
-     source.start(0, duration);
-     activeSource = source;
-   };
+    const playWhileLoading = (duration = 0) => {
+      source.connect(audioContext.destination);
+      source.start(0, duration);
+      activeSource = source;
+    };
 
-   const play = (resumeTime = 0) => {
-     // create audio source
-     source = audioContext.createBufferSource();
-     source.buffer = audioBuffer;
+    const play = (resumeTime = 0) => {
+      // create audio source
+      source = audioContext.createBufferSource();
+      source.buffer = audioBuffer;
 
-     source.connect(audioContext.destination);
-     source.start(0, resumeTime);
-   };
+      source.connect(audioContext.destination);
+      source.start(0, resumeTime);
+    };
 
-   const whileLoadingInterval = setInterval(() => {
-     if(startAt) {
-       const inSec = (Date.now() - startAt) / 1000;
-       if (playWhileLoadingDuration && inSec >= playWhileLoadingDuration) {
-         playWhileLoading(playWhileLoadingDuration);
-         playWhileLoadingDuration = source.buffer.duration
-       }
-     } else if(source) {
-       playWhileLoadingDuration = source.buffer.duration;
-       startAt = Date.now();
-       playWhileLoading();
-     }
-   }, 500);
+    const whileLoadingInterval = setInterval(() => {
+      if (startAt) {
+        const inSec = (Date.now() - startAt) / 1000;
+        if (playWhileLoadingDuration && inSec >= playWhileLoadingDuration) {
+          playWhileLoading(playWhileLoadingDuration);
+          playWhileLoadingDuration = source.buffer.duration
+        }
+      } else if (source) {
+        playWhileLoadingDuration = source.buffer.duration;
+        startAt = Date.now();
+        playWhileLoading();
+      }
+    }, 500);
 
-   const stop = () => source && source.stop(0);
+    const stop = () => source && source.stop(0);
 
-   // load file
-   socket.emit('track', (e) => {});
-   ss(socket).on('track-stream', (stream, { stat }) => {
-     let rate = 0;
-     let isData = false;
-     stream.on('data', async (data) => {
-       const audioBufferChunk = await audioContext.decodeAudioData(withWaveHeader(data, 2, 44100));
-       const newaudioBuffer = (source && source.buffer)
-         ? appendBuffer(source.buffer, audioBufferChunk, audioContext)
-         : audioBufferChunk;
-       source = audioContext.createBufferSource();
-       source.buffer = newaudioBuffer;
+    // load file
+    socket.emit('track', (e) => { });
+    ss(socket).on('track-stream', (stream, { stat }) => {
+      let rate = 0;
+      let isData = false;
+      stream.on('data', async (data) => {
+        const audioBufferChunk = await audioContext.decodeAudioData(withWaveHeader(data, 2, 44100));
+        const newaudioBuffer = (source && source.buffer)
+          ? appendBuffer(source.buffer, audioBufferChunk, audioContext)
+          : audioBufferChunk;
+        source = audioContext.createBufferSource();
+        source.buffer = newaudioBuffer;
 
-       const loadRate = (data.length * 100 ) / stat.size;
-       rate = rate + loadRate;
-      //  changeAudionState({ loadingProcess: rate, startedAt: startAt });
+        const loadRate = (data.length * 100) / stat.size;
+        rate = rate + loadRate;
+        //  changeAudionState({ loadingProcess: rate, startedAt: startAt });
 
-       if(rate >= 100) {
-         clearInterval(whileLoadingInterval);
-         audioBuffer = source.buffer;
-         const inSec = (Date.now() - startAt) / 1000;
-         activeSource.stop();
-         play(inSec);
-         resolve({ play, stop});
-       }
-       isData = true;
-     });
-   });
- } catch (e) {
-   reject(e)
- }
+        if (rate >= 100) {
+          clearInterval(whileLoadingInterval);
+          audioBuffer = source.buffer;
+          const inSec = (Date.now() - startAt) / 1000;
+          activeSource.stop();
+          play(inSec);
+          resolve({ play, stop });
+        }
+        isData = true;
+      });
+    });
+  } catch (e) {
+    reject(e)
+  }
 });
 
 
 ////////////////////////////
 
-loadFile();
 
 
 testButton.onclick = function () {
+  loadFile();
   console.log('click');
-  socket.emit('message', 'Hejsan!');
-  socket.emit('track');
+  // socket.emit('message', 'Hejsan!');
+  // socket.emit('track');
 }
 
 makeButton.onclick = function () {
   makeAudio();
+}
+
+function hasGetUserMedia() {
+  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+}
+
+
+// Check if client has GetUserMedia()
+if (hasGetUserMedia()) {
+
+  const constraints = {
+    audio: true,
+  };
+
+  // const audio = document.querySelector("#autoAudio");
+
+  navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+    console.log('streaming mic...');
+    // var stream = ss.createStream();
+    ss(socket).emit('stream-mic', stream);
+    // audio.srcObject = stream;
+  });
+
+} else {
+  alert("getUserMedia() is not supported by your browser");
 }

@@ -5,7 +5,7 @@ let chunks = [];
 let osc;
 let dest;
 let mediaRecorder;
-const audio = document.querySelector("#audio");
+const audio = document.querySelector("#autoAudio");
 const audio2 = document.querySelector("#audio2");
 const ac = new AudioContext();
 

@@ -26,6 +26,18 @@ io.on('connection', client => {
     client.emit('message', `Thanks for the message: ${message}`);
   })
 
+  let strm = null;
+  client.on('stream-mic', (istream) => {
+    console.log('stream-mic');
+    const stream = ss.createStream();
+
+    // pipe stream with response stream
+    istream.pipe(stream);
+
+    strm = stream;
+    // ss(client).emit('track-stream', stream);
+  });
+
   client.on('track', () => {
     console.log('track');
     const stream = ss.createStream();
@@ -34,7 +46,13 @@ io.on('connection', client => {
     const stat = fs.statSync(filePath);
     const readStream = fs.createReadStream(filePath);
     // pipe stream with response stream
-    readStream.pipe(stream);
-    ss(client).emit('track-stream', stream, { stat });
+    if (strm) {
+      console.log('strm');
+      readStream.pipe(strm);
+      ss(client).emit('track-stream', strm, { stat });
+    } else {
+      readStream.pipe(stream);
+      ss(client).emit('track-stream', stream, { stat });
+    }
   });
 });
