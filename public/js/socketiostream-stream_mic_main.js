@@ -1,5 +1,5 @@
 const receiveButton = document.getElementById('receiveAudioStream');
-const testButton = document.getElementById('testButton');
+const streamButton = document.getElementById('toggleStream');
 const audioContext = new AudioContext();
 
 console.log('Socket.IO-stream stream mic');
@@ -74,18 +74,23 @@ receiveButton.onclick = function () {
   // Provide the server a stream to use.
   // The server will feed data into the provided stream.
   ss(socket).emit('streamRequest', stream);
-  
+
   stream.on('data', async data => {
     let arrayBuffer = await new Response(data).arrayBuffer();   //=> <ArrayBuffer>
     playOutput(arrayBuffer);
   })
 }
 
-testButton.onclick = function () {
-  audioContext.resume();
-  console.log('recordAudio',recordAudio);
-  console.log('recordAudio.bufferSize',recordAudio.bufferSize);
-  console.log('recordAudio.getState()',recordAudio.getState());
+streamButton.onclick = function () {
+  if (recordAudio.state == 'recording') {
+    recordAudio.pauseRecording();
+    streamButton.textContent = 'Stream mic';
+  }
+
+  else if (recordAudio.state == 'paused') {
+    recordAudio.resumeRecording()
+    streamButton.textContent = 'Pause';
+  }
 }
 
 function playOutput(arrayBuffer) {
