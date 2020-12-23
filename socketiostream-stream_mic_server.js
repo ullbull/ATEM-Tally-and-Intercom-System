@@ -40,10 +40,6 @@ io.on('connection', client => {
 
     // Start feeding the data into the clients stream
     clientMicStream.pipe(stream);
-
-    // console.log('stream: ', stream);
-    // console.log('readStream: ', readStream);
-    // console.log(`Streaming the file "${filename}"`);
   });
 
 });

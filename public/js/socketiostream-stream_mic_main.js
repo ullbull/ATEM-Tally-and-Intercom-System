@@ -1,10 +1,13 @@
 const receiveButton = document.getElementById('receiveAudioStream');
-const micElement = document.getElementById('mic');
+const testButton = document.getElementById('testButton');
+const audioContext = new AudioContext();
+
+console.log('Socket.IO-stream stream mic');
 
 // Connect socket
 const socket = io();
 
-console.log('Socket.IO-stream stream mic');
+let recordAudio = null;
 
 function hasGetUserMedia() {
   return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
@@ -15,7 +18,6 @@ function sendData(type, payload) {
 }
 
 ss(socket).on('streamRequest', function (serverStream) {
-  console.log('got stream request', serverStream);
   // The server emitted the even 'streamRequest'.
   // The server provided a stream to feed data into
 
@@ -36,7 +38,7 @@ ss(socket).on('streamRequest', function (serverStream) {
         // get intervals based blobs
         // value in milliseconds
         // as you might not want to make detect calls every seconds
-        timeSlice: 1000,
+        timeSlice: 1,
 
         //2)
         // as soon as the stream is available
@@ -45,10 +47,10 @@ ss(socket).on('streamRequest', function (serverStream) {
 
           // Write data into the servers stream
           serverStream.write(new ss.Buffer(arrayBuffer));
-          // playOutput(arrayBuffer);
         }
       });
 
+      console.log('state', recordAudio.getState());
       recordAudio.startRecording();
     }, function (error) {
       console.error(JSON.stringify(error));
@@ -72,14 +74,21 @@ receiveButton.onclick = function () {
   // Provide the server a stream to use.
   // The server will feed data into the provided stream.
   ss(socket).emit('streamRequest', stream);
+  
   stream.on('data', async data => {
     let arrayBuffer = await new Response(data).arrayBuffer();   //=> <ArrayBuffer>
     playOutput(arrayBuffer);
   })
 }
 
+testButton.onclick = function () {
+  audioContext.resume();
+  console.log('recordAudio',recordAudio);
+  console.log('recordAudio.bufferSize',recordAudio.bufferSize);
+  console.log('recordAudio.getState()',recordAudio.getState());
+}
+
 function playOutput(arrayBuffer) {
-  let audioContext = new AudioContext();
   let outputSource;
   try {
     if (arrayBuffer.byteLength > 0) {
