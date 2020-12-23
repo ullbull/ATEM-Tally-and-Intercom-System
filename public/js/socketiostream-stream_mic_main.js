@@ -1,4 +1,4 @@
-const streamMicButton = document.getElementById('streamMic');
+const receiveButton = document.getElementById('receiveAudioStream');
 const micElement = document.getElementById('mic');
 
 // Connect socket
@@ -57,44 +57,26 @@ ss(socket).on('streamRequest', function (serverStream) {
   console.log(`Streaming mic to server`);
 });
 
-
-
-
-// if (hasGetUserMedia()) {
-//   // Client has the function navigator.mediaDevices.getUserMedia
-
-//   // Get access to clients mic
-//   navigator.mediaDevices.getUserMedia({ audio: true }).then((micStream) => {
-//     // micElement.srcObject = micStream;
-
-//     // Send audio stream to server
-//     ss(socket).on('streamRequest', function (stream) {
-//       console.log('got stream request');
-//       // The server emitted the even 'streamRequest'.
-//       // The server provided a stream to feed data into
-
-//       // Start feeding the data into the clients stream
-//       micStream.pipe(stream);
-
-//       console.log(`Streaming mic to server`);
-//     });
-
-
-//     streamMicButton.onclick = function () {
-//       console.log('Clicked streamMicButton');
-
-//       // Send my micStream to the server
-//       ss(socket).emit('audioStream', micStream);
-//     }
-//   });
-
-// } else {
-//   alert("getUserMedia() is not supported by your browser");
-// }
-
 socket.on('message', message => {
   console.log(message);
 });
+
+receiveButton.onclick = function () {
+  console.log('Clicked receiveButton');
+
+  // Create a new stream
+  var stream = ss.createStream();
+
+  // Emit the event 'streamRequest' to let the server
+  // know I want it to stream data.
+  // Provide the server a stream to use.
+  // The server will feed data into the provided stream.
+  ss(socket).emit('streamRequest', stream);
+  stream.on('data', async data => {
+    let arrayBuffer = await new Response(data).arrayBuffer();   //=> <ArrayBuffer>
+    playOutput(arrayBuffer);
+  })
+}
 
 function playOutput(arrayBuffer) {
   let audioContext = new AudioContext();
