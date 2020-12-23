@@ -21,19 +21,17 @@ const io = socket(server);
 
 io.on('connection', client => {
   console.log('Client connected ', client.id);
-  
+
   // Create a new stream
-  var stream = ss.createStream();
-  
+  var clientMicStream = ss.createStream();
+
   // Emit the event 'streamRequest' to let the client
   // know I want it to stream data.
   // Provide the client a stream to use.
   // The client will feed data into the provided stream.
-  ss(client).emit('streamRequest', stream);
-  stream.on('data', data => {
-    var uint8array = new TextEncoder("utf-8").encode(data);
-    var string = new TextDecoder("utf-8").decode(uint8array);
-    console.log(string);
+  ss(client).emit('streamRequest', clientMicStream);
+
+  clientMicStream.on('data', data => {
     console.log(data);
   })
 
