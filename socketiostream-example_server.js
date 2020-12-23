@@ -31,8 +31,10 @@ io.on('connection', client => {
     
     // Start feeding the data into the clients stream
     readStream.pipe(stream); 
-    
-    console.log(`!!!Streaming the file "${filename}"`);
+
+    console.log('stream: ', stream);
+    console.log('readStream: ', readStream);
+    console.log(`Streaming the file "${filename}"`);
   });
 
 });
