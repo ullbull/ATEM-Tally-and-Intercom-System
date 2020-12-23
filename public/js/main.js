@@ -1,224 +1,126 @@
+const receiveButton = document.getElementById('receiveAudioStream');
+const streamButton = document.getElementById('toggleStream');
+const audioContext = new AudioContext();
+
+function hasGetUserMedia() {
+  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+}
+
+console.log('Socket.IO-stream stream mic');
+
+// Connect socket
 const socket = io();
-const testButton = document.getElementById('testButton');
-const makeButton = document.getElementById('makeButton');
-const audio = document.getElementById('autoAudio');
-const audio1 = document.getElementById('audio1');
 
-const concat = (buffer1, buffer2) => {
-  const tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
+let recordAudio = null;
 
-  tmp.set(new Uint8Array(buffer1), 0);
-  tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
-
-  return tmp.buffer;
-};
-
-const appendBuffer = (buffer1, buffer2, context) => {
-  const numberOfChannels = Math.min(buffer1.numberOfChannels, buffer2.numberOfChannels);
-  const tmp = context.createBuffer(numberOfChannels, (buffer1.length + buffer2.length), buffer1.sampleRate);
-  for (let i = 0; i < numberOfChannels; i++) {
-    const channel = tmp.getChannelData(i);
-    channel.set(buffer1.getChannelData(i), 0);
-    channel.set(buffer2.getChannelData(i), buffer1.length);
-  }
-  return tmp;
-};
-
-
-const withWaveHeader = (data, numberOfChannels, sampleRate) => {
-  const header = new ArrayBuffer(44);
-
-  const d = new DataView(header);
-
-  d.setUint8(0, "R".charCodeAt(0));
-  d.setUint8(1, "I".charCodeAt(0));
-  d.setUint8(2, "F".charCodeAt(0));
-  d.setUint8(3, "F".charCodeAt(0));
-
-  d.setUint32(4, data.byteLength / 2 + 44, true);
-
-  d.setUint8(8, "W".charCodeAt(0));
-  d.setUint8(9, "A".charCodeAt(0));
-  d.setUint8(10, "V".charCodeAt(0));
-  d.setUint8(11, "E".charCodeAt(0));
-  d.setUint8(12, "f".charCodeAt(0));
-  d.setUint8(13, "m".charCodeAt(0));
-  d.setUint8(14, "t".charCodeAt(0));
-  d.setUint8(15, " ".charCodeAt(0));
-
-  d.setUint32(16, 16, true);
-  d.setUint16(20, 1, true);
-  d.setUint16(22, numberOfChannels, true);
-  d.setUint32(24, sampleRate, true);
-  d.setUint32(28, sampleRate * 1 * 2);
-  d.setUint16(32, numberOfChannels * 2);
-  d.setUint16(34, 16, true);
-
-  d.setUint8(36, "d".charCodeAt(0));
-  d.setUint8(37, "a".charCodeAt(0));
-  d.setUint8(38, "t".charCodeAt(0));
-  d.setUint8(39, "a".charCodeAt(0));
-  d.setUint32(40, data.byteLength, true);
-
-  return concat(header, data);
-};
-
-///////////////////////////////////////
-
-console.log('APA!');
-
-const b = document.querySelector("button");
-let clicked = false;
-let chunks = [];
-let ac;
-let osc;
-let dest;
-let mediaRecorder;
-
-function makeAudio() {
-  let blob = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' });
-  audio1.src = URL.createObjectURL(blob);
-  audio1.play();
-
-
-  // let blob = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' });
-  // let audioTag = document.createElement('audio');
-  // audioTag.src = URL.createObjectURL(blob);
-  // audioTag.play();
+function hasGetUserMedia() {
+  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
 }
 
 function sendData(type, payload) {
   socket.emit(type, payload);
 }
 
+ss(socket).on('streamRequest', function (serverStream) {
+  // The server emitted the even 'streamRequest'.
+  // The server provided a stream to feed data into
+
+  // Get access to clients mic
+  // Check if client has GetUserMedia()
+  if (hasGetUserMedia()) {
+
+    // Get access to mic
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((micStream) => {
+      console.log('Got access to mic!');
+      recordAudio = RecordRTC(micStream, {
+        type: 'audio',
+        mimeType: 'audio/webm',
+        sampleRate: 44100,
+        desiredSampRate: 16000,
+
+        recorderType: StereoAudioRecorder,
+        numberOfAudioChannels: 1,
+
+        //1)
+        // get intervals based blobs
+        // value in milliseconds
+        // as you might not want to make detect calls every seconds
+        timeSlice: 1,
+
+        //2)
+        // as soon as the stream is available
+        ondataavailable: async function (blob) {
+          let arrayBuffer = await new Response(blob).arrayBuffer();   //=> <ArrayBuffer>
+
+          // Write data into the servers stream
+          serverStream.write(new ss.Buffer(arrayBuffer));
+        }
+      });
+
+      console.log('state', recordAudio.getState());
+      recordAudio.startRecording();
+
+    });
+
+  } else {
+    alert("getUserMedia() is not supported by your browser");
+  }
+  console.log(`Streaming mic to server`);
+});
+
 socket.on('message', message => {
   console.log(message);
 });
 
+receiveButton.onclick = function () {
+  console.log('Clicked receiveButton');
 
-/////////////////////////////
+  // Create a new stream
+  var stream = ss.createStream();
 
-const getAudioContext = () => {
-  AudioContext = window.AudioContext || window.webkitAudioContext;
-  const audioContext = new AudioContext();
-  const analyser = audioContext.createAnalyser();
+  // Emit the event 'streamRequest' to let the server
+  // know I want it to stream data.
+  // Provide the server a stream to use.
+  // The server will feed data into the provided stream.
+  ss(socket).emit('streamRequest', stream);
 
-  return { audioContext, analyser };
-};
+  stream.on('data', async data => {
+    let arrayBuffer = await new Response(data).arrayBuffer();   //=> <ArrayBuffer>
+    playOutput(arrayBuffer);
+  })
+}
 
-const loadFile = () => new Promise(async (resolve, reject) => {
-  try {
-    let source = null;
-    let playWhileLoadingDuration = 0;
-    let startAt = 0;
-    let audioBuffer = null;
-    let activeSource = null;
+streamButton.onclick = function () {
+  audioContext.resume();
 
-    // create audio context
-    const { audioContext, analyser } = getAudioContext();
-    const gainNode = audioContext.createGain();
-
-    const playWhileLoading = (duration = 0) => {
-      source.connect(audioContext.destination);
-      source.start(0, duration);
-      activeSource = source;
-    };
-
-    const play = (resumeTime = 0) => {
-      // create audio source
-      source = audioContext.createBufferSource();
-      source.buffer = audioBuffer;
-
-      source.connect(audioContext.destination);
-      source.start(0, resumeTime);
-    };
-
-    const whileLoadingInterval = setInterval(() => {
-      if (startAt) {
-        const inSec = (Date.now() - startAt) / 1000;
-        if (playWhileLoadingDuration && inSec >= playWhileLoadingDuration) {
-          playWhileLoading(playWhileLoadingDuration);
-          playWhileLoadingDuration = source.buffer.duration
-        }
-      } else if (source) {
-        playWhileLoadingDuration = source.buffer.duration;
-        startAt = Date.now();
-        playWhileLoading();
-      }
-    }, 500);
-
-    const stop = () => source && source.stop(0);
-
-    // load file
-    socket.emit('track', (e) => { });
-    ss(socket).on('track-stream', (stream, { stat }) => {
-      let rate = 0;
-      let isData = false;
-      stream.on('data', async (data) => {
-        const audioBufferChunk = await audioContext.decodeAudioData(withWaveHeader(data, 2, 44100));
-        const newaudioBuffer = (source && source.buffer)
-          ? appendBuffer(source.buffer, audioBufferChunk, audioContext)
-          : audioBufferChunk;
-        source = audioContext.createBufferSource();
-        source.buffer = newaudioBuffer;
-
-        const loadRate = (data.length * 100) / stat.size;
-        rate = rate + loadRate;
-        //  changeAudionState({ loadingProcess: rate, startedAt: startAt });
-
-        if (rate >= 100) {
-          clearInterval(whileLoadingInterval);
-          audioBuffer = source.buffer;
-          const inSec = (Date.now() - startAt) / 1000;
-          activeSource.stop();
-          play(inSec);
-          resolve({ play, stop });
-        }
-        isData = true;
-      });
-    });
-  } catch (e) {
-    reject(e)
+  if (recordAudio.state == 'recording') {
+    recordAudio.pauseRecording();
+    streamButton.textContent = 'Stream mic';
   }
-});
 
-
-////////////////////////////
-
-
-
-testButton.onclick = function () {
-  loadFile();
-  console.log('click');
-  // socket.emit('message', 'Hejsan!');
-  // socket.emit('track');
+  else if (recordAudio.state == 'paused') {
+    recordAudio.resumeRecording()
+    streamButton.textContent = 'Pause';
+  }
 }
 
-makeButton.onclick = function () {
-  makeAudio();
-}
-
-function hasGetUserMedia() {
-  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-}
-
-
-// Check if client has GetUserMedia()
-if (hasGetUserMedia()) {
-
-  const constraints = {
-    audio: true,
-  };
-
-  // const audio = document.querySelector("#autoAudio");
-
-  navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-    console.log('streaming mic...');
-    // var stream = ss.createStream();
-    ss(socket).emit('stream-mic', stream);
-    // audio.srcObject = stream;
-  });
-
-} else {
-  alert("getUserMedia() is not supported by your browser");
+function playOutput(arrayBuffer) {
+  let outputSource;
+  try {
+    if (arrayBuffer.byteLength > 0) {
+      audioContext.decodeAudioData(arrayBuffer,
+        function (buffer) {
+          audioContext.resume();
+          outputSource = audioContext.createBufferSource();
+          outputSource.connect(audioContext.destination);
+          outputSource.buffer = buffer;
+          outputSource.start(0);
+        },
+        function () {
+          console.log(arguments);
+        });
+    }
+  } catch (e) {
+    console.log(e);
+  }
 }

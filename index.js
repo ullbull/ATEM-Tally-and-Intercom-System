@@ -13,46 +13,33 @@ const server = app.listen(port);
 // Host public files
 app.use(express.static('public'));
 
-console.log('APA')
+console.log('Socket.IO-stream stream mic');
 
 const io = socket(server);
 
 io.on('connection', client => {
   console.log('Client connected ', client.id);
-  client.emit('message', `You are connected!`);
 
-  client.on('message', message => {
-    console.log(`I got this message from client ${client.id}: ${message}`);
-    client.emit('message', `Thanks for the message: ${message}`);
+  // Create a new stream
+  var clientMicStream = ss.createStream();
+
+  // Emit the event 'streamRequest' to let the client
+  // know I want it to stream data.
+  // Provide the client a stream to use.
+  // The client will feed data into the provided stream.
+  ss(client).emit('streamRequest', clientMicStream);
+
+  clientMicStream.on('data', data => {
+    console.log(data);
   })
 
-  let strm = null;
-  client.on('stream-mic', (istream) => {
-    console.log('stream-mic');
-    const stream = ss.createStream();
+  // Send file to client
+  ss(client).on('streamRequest', function (stream) {
+    // The client emitted the even 'streamRequest'.
+    // The client provided a stream to feed data into
 
-    // pipe stream with response stream
-    istream.pipe(stream);
-
-    strm = stream;
-    // ss(client).emit('track-stream', stream);
+    // Start feeding the data into the clients stream
+    clientMicStream.pipe(stream);
   });
 
-  client.on('track', () => {
-    console.log('track');
-    const stream = ss.createStream();
-    const filePath = path.resolve(__dirname, './track.wav');
-    // get file info
-    const stat = fs.statSync(filePath);
-    const readStream = fs.createReadStream(filePath);
-    // pipe stream with response stream
-    if (strm) {
-      console.log('strm');
-      readStream.pipe(strm);
-      ss(client).emit('track-stream', strm, { stat });
-    } else {
-      readStream.pipe(stream);
-      ss(client).emit('track-stream', stream, { stat });
-    }
-  });
 });
