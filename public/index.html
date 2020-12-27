@@ -7,7 +7,8 @@
   <title>ATEM Intercom and Tally System</title>
 
   <link rel="stylesheet" href="./css/bootstrap.min.css">
-  <script src="./js/jquery.js"></script>
+  <!-- <script src="./js/jquery.js"></script> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 <body>
@@ -15,7 +16,7 @@
   <p><button id="ptt">ptt</button></p>
   <p><button id="ptt-off">ptt-off</button></p>
 
-  <audio id="mic" autoplay></audio>
+  <audio id="mic" controls></audio>
 
   <script src="/socket.io/socket.io.js"></script>
   <!-- <script src="./js/socket.io-stream.js"></script>
