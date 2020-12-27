@@ -7,19 +7,21 @@
   <title>ATEM Intercom and Tally System</title>
 
   <link rel="stylesheet" href="./css/bootstrap.min.css">
-
+  <script src="./js/jquery.js"></script>
 </head>
 
 <body>
   <h1>ATEM Intercom and Tally System</h1>
-  <p><button id="receiveAudioStream">Receive audio stream</button></p>
-  <p><button id="toggleStream">Stream mic</button></p>
+  <p><button id="ptt">ptt</button></p>
+  <p><button id="ptt-off">ptt-off</button></p>
+
+  <audio id="mic" autoplay></audio>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/socket.io-stream.js"></script>
-  <script src="/js/librarys/RecordRTC/RecordRTC.js"></script>
+  <!-- <script src="./js/socket.io-stream.js"></script>
+  <script src="./js/librarys/RecordRTC/RecordRTC.js"></script> -->
   
-  <script src="js/main.js"></script>
+  <script src="./js/main.js"></script>
 </body>
 
 </html>

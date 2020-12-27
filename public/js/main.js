@@ -1,126 +1,100 @@
-const receiveButton = document.getElementById('receiveAudioStream');
-const streamButton = document.getElementById('toggleStream');
-const audioContext = new AudioContext();
+$(document).ready(function () {
 
-function hasGetUserMedia() {
-  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-}
+    // const mic = document.getElementById('mic');
 
-console.log('Socket.IO-stream stream mic');
 
-// Connect socket
-const socket = io();
-
-let recordAudio = null;
-
-function hasGetUserMedia() {
-  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-}
-
-function sendData(type, payload) {
-  socket.emit(type, payload);
-}
-
-ss(socket).on('streamRequest', function (serverStream) {
-  // The server emitted the even 'streamRequest'.
-  // The server provided a stream to feed data into
-
-  // Get access to clients mic
-  // Check if client has GetUserMedia()
-  if (hasGetUserMedia()) {
-
-    // Get access to mic
-    navigator.mediaDevices.getUserMedia({ audio: true }).then((micStream) => {
-      console.log('Got access to mic!');
-      recordAudio = RecordRTC(micStream, {
-        type: 'audio',
-        mimeType: 'audio/webm',
-        sampleRate: 44100,
-        desiredSampRate: 16000,
-
-        recorderType: StereoAudioRecorder,
-        numberOfAudioChannels: 1,
-
-        //1)
-        // get intervals based blobs
-        // value in milliseconds
-        // as you might not want to make detect calls every seconds
-        timeSlice: 1,
-
-        //2)
-        // as soon as the stream is available
-        ondataavailable: async function (blob) {
-          let arrayBuffer = await new Response(blob).arrayBuffer();   //=> <ArrayBuffer>
-
-          // Write data into the servers stream
-          serverStream.write(new ss.Buffer(arrayBuffer));
-        }
-      });
-
-      console.log('state', recordAudio.getState());
-      recordAudio.startRecording();
-
+    // var socket = io("https://server:4000", verify=false);
+    var socket = io();
+    socket.on('audio stream', function (name, blob) {
+        var video = document.querySelector('video');
+        video.src = blob;
     });
+    $('#ptt').click(function () {
+        micOn();
+        document.getElementById("ptt").disabled = true;
+        document.getElementById("ptt-off").disabled = false;
+    });
+    $('#ptt-off').click(function () {
+        stream.getAudioTracks()[0].stop();
+        document.getElementById("ptt").disabled = false;
+        document.getElementById("ptt-off").disabled = true;
+    });
+    function micOn() {
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-  } else {
-    alert("getUserMedia() is not supported by your browser");
-  }
-  console.log(`Streaming mic to server`);
-});
+        var constraints = {
+            audio: true,
+            //   video: false
+        };
+        //   var video = document.querySelector('video');
 
-socket.on('message', message => {
-  console.log(message);
-});
+        function successCallback(stream) {
+            const mic = document.querySelector('#mic');
+            // window.stream = stream; // stream available to console
+            // var blob = window.URL.createObjectURL(stream);
 
-receiveButton.onclick = function () {
-  console.log('Clicked receiveButton');
+            // Create media recorder
+            const mediaRecorder = new MediaRecorder(stream);
 
-  // Create a new stream
-  var stream = ss.createStream();
+            console.log('starting media recorder')
+            mediaRecorder.start(5000);
+            console.log(mediaRecorder);
 
-  // Emit the event 'streamRequest' to let the server
-  // know I want it to stream data.
-  // Provide the server a stream to use.
-  // The server will feed data into the provided stream.
-  ss(socket).emit('streamRequest', stream);
+            let chunks = [];
 
-  stream.on('data', async data => {
-    let arrayBuffer = await new Response(data).arrayBuffer();   //=> <ArrayBuffer>
-    playOutput(arrayBuffer);
-  })
-}
+            mediaRecorder.ondataavailable = function (e) {
+                chunks.push(e.data);
+                console.log('e.data:', e.data);
+                // mediaRecorder.stop();
 
-streamButton.onclick = function () {
-  audioContext.resume();
+                const blob = e.data;
+                const audioURL = window.URL.createObjectURL(blob);
+                mic.src = audioURL;
+            }
 
-  if (recordAudio.state == 'recording') {
-    recordAudio.pauseRecording();
-    streamButton.textContent = 'Stream mic';
-  }
+            mediaRecorder.onstop = function (e) {
 
-  else if (recordAudio.state == 'paused') {
-    recordAudio.resumeRecording()
-    streamButton.textContent = 'Pause';
-  }
-}
+                // const clipContainer = document.createElement('article');
+                // const clipLabel = document.createElement('p');
+                // const audio = document.createElement('audio');
+                // const deleteButton = document.createElement('button');
 
-function playOutput(arrayBuffer) {
-  let outputSource;
-  try {
-    if (arrayBuffer.byteLength > 0) {
-      audioContext.decodeAudioData(arrayBuffer,
-        function (buffer) {
-          audioContext.resume();
-          outputSource = audioContext.createBufferSource();
-          outputSource.connect(audioContext.destination);
-          outputSource.buffer = buffer;
-          outputSource.start(0);
-        },
-        function () {
-          console.log(arguments);
-        });
+                // clipContainer.classList.add('clip');
+                // audio.setAttribute('controls', '');
+                // deleteButton.innerHTML = "Delete";
+                // clipLabel.innerHTML = clipName;
+
+                // clipContainer.appendChild(audio);
+                // clipContainer.appendChild(clipLabel);
+                // clipContainer.appendChild(deleteButton);
+                // soundClips.appendChild(clipContainer);
+
+                const blob = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' });
+                chunks = [];
+                const audioURL = window.URL.createObjectURL(blob);
+                mic.src = audioURL;
+                // audio.src = audioURL;
+
+                // deleteButton.onclick = function(e) {
+                //   let evtTgt = e.target;
+                //   evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
+                // }
+            }
+
+
+
+
+            // var blob = stream.toBlob();
+            // socket.emit('audio stream', myName, blob);
+            // console.log('blob: ', blob);
+            // mic.srcObject = stream;
+
+        }
+
+        function errorCallback(error) {
+            console.log('navigator.getUserMedia error: ', error);
+        }
+
+        navigator.getUserMedia(constraints, successCallback, errorCallback);
     }
-  } catch (e) {
-    console.log(e);
-  }
-}
+});
