@@ -36,20 +36,13 @@ ss(socket).on('streamRequest', function (serverStream) {
          recordAudio = RecordRTC(micStream, {
             type: 'audio',
             mimeType: 'audio/webm',
-            sampleRate: 44100,
+            // sampleRate: 44100,
             desiredSampRate: 16000,
-
             recorderType: StereoAudioRecorder,
             numberOfAudioChannels: 1,
 
-            //1)
-            // get intervals based blobs
-            // value in milliseconds
-            // as you might not want to make detect calls every seconds
-            timeSlice: 1,
+            timeSlice: 500,
 
-            //2)
-            // as soon as the stream is available
             ondataavailable: async function (blob) {
                let arrayBuffer = await new Response(blob).arrayBuffer();   //=> <ArrayBuffer>
 
@@ -59,14 +52,23 @@ ss(socket).on('streamRequest', function (serverStream) {
          });
 
          console.log('state', recordAudio.getState());
+
          // recordAudio.startRecording();
+
+         // /////////////TESTING////////////////////////
+         // let arrayBuffer = [1,2,3,4];
+
+         // console.log('writing');
+         // serverStream.write(new ss.Buffer(arrayBuffer));
+
+         // // micStream.pipe(serverStream);
+         // /////////////////////////////////////////////
 
       });
 
    } else {
       alert("getUserMedia() is not supported by your browser");
    }
-   console.log(`Streaming mic to server`);
 });
 
 socket.on('message', message => {
@@ -75,6 +77,7 @@ socket.on('message', message => {
 
 socket.on('connectedClients', clients => {
    connectedClients = clients;
+   console.log('connectedClients:', connectedClients)
 });
 
 receiveButton.onclick = function () {
@@ -103,7 +106,6 @@ receiveButton.onclick = function () {
 }
 
 streamButton.onclick = function () {
-   audioContext.resume();
 
    if (recordAudio.state == 'recording') {
       recordAudio.pauseRecording();
