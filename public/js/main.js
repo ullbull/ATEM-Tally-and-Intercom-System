@@ -1,6 +1,7 @@
 const receiveButton = document.getElementById('receiveAudioStream');
 const streamButton = document.getElementById('toggleStream');
 const audioContext = new AudioContext();
+let connectedClients = 0;
 
 function hasGetUserMedia() {
    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
@@ -11,14 +12,14 @@ console.log('Socket.IO-stream stream mic');
 // Connect socket
 const socket = io();
 
+function sendData(type, payload) {
+   socket.emit(type, payload);
+}
+
 let recordAudio = null;
 
 function hasGetUserMedia() {
    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-}
-
-function sendData(type, payload) {
-   socket.emit(type, payload);
 }
 
 ss(socket).on('streamRequest', function (serverStream) {
@@ -72,23 +73,33 @@ socket.on('message', message => {
    console.log(message);
 });
 
+socket.on('connectedClients', clients => {
+   connectedClients = clients;
+});
+
 receiveButton.onclick = function () {
    // receiveButton.disabled = true;
    console.log('Clicked receiveButton');
 
-   // Create a new stream
-   var stream = ss.createStream();
+   // Create streams
+   const streams = [];
+   connectedClients.forEach(client => {
+      let stream = ss.createStream();
+      streams.push(stream);
+   });
 
    // Emit the event 'streamRequest' to let the server
    // know I want it to stream data.
    // Provide the server a stream to use.
    // The server will feed data into the provided stream.
-   ss(socket).emit('streamRequest', stream);
+   ss(socket).emit('streamRequest', streams);
 
-   stream.on('data', async data => {
-      let arrayBuffer = await new Response(data).arrayBuffer();   //=> <ArrayBuffer>
-      playOutput(arrayBuffer);
-   })
+   streams.forEach(stream => {
+      stream.on('data', async data => {
+         let arrayBuffer = await new Response(data).arrayBuffer();   //=> <ArrayBuffer>
+         playOutput(arrayBuffer);
+      })
+   });
 }
 
 streamButton.onclick = function () {

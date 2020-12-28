@@ -17,29 +17,61 @@ console.log('Socket.IO-stream stream mic');
 
 const io = socket(server);
 
+const streams = {};
+function addStream(stream, id) {
+   streams[id] = stream;
+}
+function removeStream(id) {
+   delete streams[id];
+}
+
+function getClientIDs() {
+   const clientIDs = [];
+   const srvSockets = io.sockets.sockets;
+   srvSockets.forEach(function (value, key) {
+      clientIDs.push(key);
+      // console.log(key + ' = ' + value)
+   })
+   return clientIDs;
+}
+
 io.on('connection', client => {
-  console.log('Client connected ', client.id);
+   const srvSockets = io.sockets.sockets;
+   console.log('Client connected ', client.id);
+   console.log('Connected clients: ', srvSockets.size);
+   console.log('clients: ', getClientIDs());
 
-  // Create a new stream
-  var clientMicStream = ss.createStream();
+   // Send to all clients
+   io.emit('connectedClients', getClientIDs());
 
-  // Emit the event 'streamRequest' to let the client
-  // know I want it to stream data.
-  // Provide the client a stream to use.
-  // The client will feed data into the provided stream.
-  ss(client).emit('streamRequest', clientMicStream);
+   // Create a new stream
+   const clientStream = ss.createStream();
+   addStream(clientStream, client.id);
 
-  clientMicStream.on('data', data => {
-    console.log(data);
-  })
+   // Emit the event 'streamRequest' to let the client
+   // know I want it to stream data.
+   // Provide the client a stream to use.
+   // The client will feed data into the provided stream.
+   ss(client).emit('streamRequest', clientStream);
+   // ss(client).emit('streamRequest', mainStream);
 
-  // Send file to client
-  ss(client).on('streamRequest', function (stream) {
-    // The client emitted the even 'streamRequest'.
-    // The client provided a stream to feed data into
+   clientStream.on('data', data => {
+      // console.log(data);
+   })
 
-    // Start feeding the data into the clients stream
-    clientMicStream.pipe(stream);
-  });
+   ss(client).on('streamRequest', function (clientStreams) {
+      // The client emitted the even 'streamRequest'.
+      // The client provided streams to feed data into
 
+      // Start feeding data into the clients streams
+      for (let i = 0; i < clientStreams.length; i++) {
+         Object.values(streams)[i].pipe(clientStreams[i]);
+      }
+   });
+
+   // Runs when client disconnects
+   client.on('disconnect', () => {
+      console.log('Disconnecting client', client.id)
+      removeStream(client.id);
+   });
 });
