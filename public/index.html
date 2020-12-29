@@ -2,24 +2,44 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ATEM Intercom and Tally System</title>
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+   <title>ATEM Intercom and Tally System</title>
 
-  <link rel="stylesheet" href="./css/bootstrap.min.css">
-
+   <link rel="stylesheet" href="./css/styles.css" />
 </head>
 
 <body>
-  <h1>ATEM Intercom and Tally System</h1>
-  <p><button id="receiveAudioStream">Receive audio stream</button></p>
-  <p><button id="toggleStream">Stream mic</button></p>
+   <div class="container">
+      <header class="header">
+         <div class="logo-container">
+            <h1 class="logo-text">
+               ATEM Intercom and Tally System
+            </h1>
+         </div>
+      </header>
+      <div class="content-container">
+         <div class="panel">
+            <h3 class="panel-title" id="panel-title">Active Users:</h3>
+            <div class="active-users-panel" id="active-user-container"></div>
+         </div>
+         <div class="audio-chat-container">
+            <h2 class="talk-info" id="talking-with-info">
+               Select active user on the left menu.
+            </h2>
+            <p id="my-id">My ID:</p>
+            <div class="audio-container">
+               <div>
+                  <audio autoplay controls id="remote-audio"></audio>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/socket.io-stream.js"></script>
-  <script src="/js/librarys/RecordRTC/RecordRTC.js"></script>
-  
-  <script src="js/main.js"></script>
+   <script src="/socket.io/socket.io.js"></script>
+   <script src="./js/main.js"></script>
 </body>
 
 </html>

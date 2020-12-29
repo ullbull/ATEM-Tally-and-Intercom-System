@@ -13,17 +13,11 @@ const server = app.listen(port);
 // Host public files
 app.use(express.static('public'));
 
-console.log('Socket.IO-stream stream mic');
+console.log('WebRTC test');
 
 const io = socket(server);
 
-const streams = {};
-function addStream(stream, id) {
-   streams[id] = stream;
-}
-function removeStream(id) {
-   delete streams[id];
-}
+
 
 function getClientIDs() {
    const clientIDs = [];
@@ -41,37 +35,35 @@ io.on('connection', client => {
    console.log('Connected clients: ', srvSockets.size);
    console.log('clients: ', getClientIDs());
 
+   // Send to client
+   client.emit('message', 'You are connected!');
+
    // Send to all clients
-   io.emit('connectedClients', getClientIDs());
+   io.emit('connected clients', getClientIDs());
 
-   // Create a new stream
-   const clientStream = ss.createStream();
-   addStream(clientStream, client.id);
-
-   // Emit the event 'streamRequest' to let the client
-   // know I want it to stream data.
-   // Provide the client a stream to use.
-   // The client will feed data into the provided stream.
-   ss(client).emit('streamRequest', clientStream);
-   // ss(client).emit('streamRequest', mainStream);
-
-   clientStream.on('data', data => {
-      // console.log(data);
-   })
-
-   ss(client).on('streamRequest', function (clientStreams) {
-      // The client emitted the even 'streamRequest'.
-      // The client provided streams to feed data into
-
-      // Start feeding data into the clients streams
-      for (let i = 0; i < clientStreams.length; i++) {
-         Object.values(streams)[i].pipe(clientStreams[i]);
-      }
+   client.on("call-user", data => {
+      // sending to individual socketid (private message)
+      io.to(data.to).emit("call-made", {
+         offer: data.offer,
+         socket: client.id
+      });
    });
+
+   client.on("make-answer", data => {
+      // Send back to caller
+      io.to(data.to).emit("answer-made", {
+         socket: client.id,
+         answer: data.answer
+      });
+   });
+
+
 
    // Runs when client disconnects
    client.on('disconnect', () => {
       console.log('Disconnecting client', client.id)
-      removeStream(client.id);
+      // Send to all clients
+      io.emit('disconnect client', client.id);
+      io.emit('connected clients', getClientIDs());
    });
 });

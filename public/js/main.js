@@ -1,145 +1,144 @@
-const receiveButton = document.getElementById('receiveAudioStream');
-const streamButton = document.getElementById('toggleStream');
-const audioContext = new AudioContext();
-let connectedClients = 0;
+let isAlreadyCalling = false;
+let getCalled = false;
 
-function hasGetUserMedia() {
-   return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+const existingCalls = [];
+
+const { RTCPeerConnection, RTCSessionDescription } = window;
+
+const peerConnection = new RTCPeerConnection();
+
+function unselectUsersFromList() {
+   const alreadySelectedUser = document.querySelectorAll(
+      ".active-user.active-user--selected"
+   );
+
+   alreadySelectedUser.forEach(el => {
+      el.setAttribute("class", "active-user");
+   });
 }
 
-console.log('Socket.IO-stream stream mic');
+function createUserItemContainer(socketId, thisUser = false) {
+   const userContainerEl = document.createElement("div");
+   const usernameEl = document.createElement("p");
+
+   userContainerEl.setAttribute("class", "active-user");
+   userContainerEl.setAttribute("id", socketId);
+   usernameEl.setAttribute("class", "username");
+   usernameEl.innerHTML = `User: ${socketId}`;
+
+   userContainerEl.appendChild(usernameEl);
+
+   if (thisUser) {
+      usernameEl.innerHTML = `My id: ${socketId}`;
+      return userContainerEl;
+   }
+
+   userContainerEl.addEventListener("click", () => {
+      unselectUsersFromList();
+      userContainerEl.setAttribute("class", "active-user active-user--selected");
+      const talkingWithInfo = document.getElementById("talking-with-info");
+      talkingWithInfo.innerHTML = `Talking with: "User: ${socketId}"`;
+      callUser(socketId);
+   });
+
+   return userContainerEl;
+}
+
+async function callUser(socketId) {
+   const offer = await peerConnection.createOffer();
+   await peerConnection.setLocalDescription(new RTCSessionDescription(offer));
+
+   socket.emit("call-user", {
+      offer,
+      to: socketId
+   });
+}
+
+function updateUserList(socketIds, myId) {
+   const activeUserContainer = document.getElementById("active-user-container");
+   // Set my id
+   document.getElementById("my-id").innerHTML = `My ID: ${myId}`;
+
+   // Clear list
+   while (activeUserContainer.firstChild) {
+      activeUserContainer.removeChild(activeUserContainer.lastChild);
+   }
+
+   // Fill list
+   socketIds.forEach(socketId => {
+      const alreadyExistingUser = document.getElementById(socketId);
+      if (!alreadyExistingUser && socketId != myId) {
+         const userContainerEl = createUserItemContainer(socketId);
+         activeUserContainer.appendChild(userContainerEl);
+      }
+   });
+}
 
 // Connect socket
 const socket = io();
 
-function sendData(type, payload) {
-   socket.emit(type, payload);
-}
-
-let recordAudio = null;
-
-function hasGetUserMedia() {
-   return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-}
-
-ss(socket).on('streamRequest', function (serverStream) {
-   // The server emitted the even 'streamRequest'.
-   // The server provided a stream to feed data into
-
-   // Get access to clients mic
-   // Check if client has GetUserMedia()
-   if (hasGetUserMedia()) {
-
-      // Get access to mic
-      navigator.mediaDevices.getUserMedia({ audio: true }).then((micStream) => {
-         console.log('Got access to mic!');
-         recordAudio = RecordRTC(micStream, {
-            type: 'audio',
-            mimeType: 'audio/webm',
-            // sampleRate: 44100,
-            desiredSampRate: 16000,
-            recorderType: StereoAudioRecorder,
-            numberOfAudioChannels: 1,
-
-            timeSlice: 500,
-
-            ondataavailable: async function (blob) {
-               let arrayBuffer = await new Response(blob).arrayBuffer();   //=> <ArrayBuffer>
-
-               // Write data into the servers stream
-               serverStream.write(new ss.Buffer(arrayBuffer));
-            }
-         });
-
-         console.log('state', recordAudio.getState());
-
-         // recordAudio.startRecording();
-
-         // /////////////TESTING////////////////////////
-         // let arrayBuffer = [1,2,3,4];
-
-         // console.log('writing');
-         // serverStream.write(new ss.Buffer(arrayBuffer));
-
-         // // micStream.pipe(serverStream);
-         // /////////////////////////////////////////////
-
-      });
-
-   } else {
-      alert("getUserMedia() is not supported by your browser");
-   }
+socket.on('message', (message) => {
+   console.log('Received message:', message);
 });
 
-socket.on('message', message => {
-   console.log(message);
+socket.on("connected clients", (clientIDs) => {
+   updateUserList(clientIDs, socket.id);
 });
 
-socket.on('connectedClients', clients => {
-   connectedClients = clients;
-   console.log('connectedClients:', connectedClients)
-});
+socket.on("call-made", async data => {
+   await peerConnection.setRemoteDescription(
+      new RTCSessionDescription(data.offer)
+   );
+   const answer = await peerConnection.createAnswer();
+   await peerConnection.setLocalDescription(new RTCSessionDescription(answer));
 
-receiveButton.onclick = function () {
-   // receiveButton.disabled = true;
-   console.log('Clicked receiveButton');
-
-   // Create streams
-   const streams = [];
-   connectedClients.forEach(client => {
-      let stream = ss.createStream();
-      streams.push(stream);
+   socket.emit("make-answer", {
+      answer,
+      to: data.socket
    });
+});
 
-   // Emit the event 'streamRequest' to let the server
-   // know I want it to stream data.
-   // Provide the server a stream to use.
-   // The server will feed data into the provided stream.
-   ss(socket).emit('streamRequest', streams);
+socket.on("answer-made", async data => {
+   await peerConnection.setRemoteDescription(
+      new RTCSessionDescription(data.answer)
+   );
 
-   streams.forEach(stream => {
-      stream.on('data', async data => {
-         let arrayBuffer = await new Response(data).arrayBuffer();   //=> <ArrayBuffer>
-         playOutput(arrayBuffer);
-      })
-   });
-}
-
-streamButton.onclick = function () {
-
-   if (recordAudio.state == 'recording') {
-      recordAudio.pauseRecording();
-      streamButton.textContent = 'Stream mic';
+   if (!isAlreadyCalling) {
+      callUser(data.socket);
+      isAlreadyCalling = true;
    }
+});
 
-   else if (recordAudio.state == 'paused') {
-      recordAudio.resumeRecording()
-      streamButton.textContent = 'Pause';
+socket.on('disconnect client', (clientId) => {
+   console.log('client disconnected:', clientId);
+   //    const element = document.getElementById(clientId); 
+   //    if (element) {
+   //      element.remove();
+   //    }
+});
+
+peerConnection.ontrack = function ({ streams: [stream] }) {
+   const remoteAudio = document.getElementById("remote-audio");
+   if (remoteAudio) {
+      remoteAudio.srcObject = stream;
    }
-   else if (recordAudio.state == 'inactive') {
-      recordAudio.startRecording();
-      streamButton.textContent = 'Pause';
-   }
+};
 
-}
-
-function playOutput(arrayBuffer) {
-   let outputSource;
-   try {
-      if (arrayBuffer.byteLength > 0) {
-         audioContext.decodeAudioData(arrayBuffer,
-            function (buffer) {
-               audioContext.resume();
-               outputSource = audioContext.createBufferSource();
-               outputSource.connect(audioContext.destination);
-               outputSource.buffer = buffer;
-               outputSource.start(0);
-            },
-            function () {
-               console.log(arguments);
-            });
+navigator.getUserMedia(
+   {
+      // video: true,
+      audio: true
+   },
+   stream => {
+      const localAudio = document.getElementById("local-audio");
+      if (localAudio) {
+         localAudio.srcObject = stream;
       }
-   } catch (e) {
-      console.log(e);
+
+      stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+   },
+
+   error => {
+      console.warn(error.message);
    }
-}
+);
