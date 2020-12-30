@@ -43,9 +43,11 @@ connection.onstream = function (event) {
 
    connection.audiosContainer.appendChild(mediaElement);
 
-   setTimeout(function () {
-      mediaElement.media.play();
-   }, 5000);
+   mediaElement.media.pause();
+
+   // setTimeout(function () {
+   //    mediaElement.media.pause();
+   // }, 1000);
 
    mediaElement.id = event.streamid;
 };
@@ -61,6 +63,83 @@ connection.onstreamended = function (event) {
 connection.openOrJoin(roomId);
 
 ///////////////////////////////////////////////////////
+
+// Mute my stream
+// setTimeout(function () {
+//    const myStream = connection.streamEvents.selectFirst({
+//       local: true
+//    }).stream;
+//    myStream.mute('both');
+// }, 1000);
+let isMuted = true;
+
+function unmute() {
+   if(!connection.streamEvents.selectFirst({local: true})){
+      return;
+   }
+
+   const firstLocalStream = connection.streamEvents.selectFirst({
+      local: true
+   }).stream;
+
+   if (isMuted) {
+      firstLocalStream.unmute('both');
+      isMuted = false;
+      console.log('unmuted');
+   }
+}
+
+function mute() {
+   if(!connection.streamEvents.selectFirst({local: true})){
+      return;
+   }
+
+   const firstLocalStream = connection.streamEvents.selectFirst({
+      local: true
+   }).stream;
+   
+   if (!isMuted) {
+      firstLocalStream.mute('both');
+      isMuted = true;
+      console.log('muted');
+   }
+}
+
+window.addEventListener('keydown', event => {
+   if (event.shiftKey) {
+      unmute();
+   }
+
+   if (event.ctrlKey) {
+      console.log('ctrlkey down')
+   }
+});
+
+const pptButton = document.getElementById('ppt-button');
+
+pptButton.onmousedown = function(event) {
+   unmute();
+}
+pptButton.ontouchstart = function(event) {
+   unmute();
+}
+
+pptButton.onmouseup = function(event) {
+   mute();
+}
+pptButton.ontouchend = function(event) {
+   mute();
+}
+
+window.addEventListener('keyup', event => {
+   console.log(`${event.key} up`);
+   console.log('connection', connection);
+
+   
+   if (event.key == 'Shift') {
+      mute();
+   }
+});
 
 function createUserItemContainer(socketId, thisUser = false) {
    const userContainerEl = document.createElement("div");
