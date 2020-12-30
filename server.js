@@ -36,6 +36,35 @@ var config = getValuesFromConfigJson(jsonPath);
 // --------------------------
 // socket.io codes goes below
 
+function getClientIDs() {
+   const clientIDs = [];
+   const srvSockets = io.sockets.sockets;
+   srvSockets.forEach(function (value, key) {
+      clientIDs.push(key);
+      // console.log(key + ' = ' + value)
+   })
+   return clientIDs;
+}
+
 io.on('connection', function (socket) {
    RTCMultiConnectionServer.addSocket(socket, config);
+
+   const srvSockets = io.sockets.sockets;
+   console.log('Client connected ', socket.id);
+   console.log('Connected clients: ', srvSockets.size);
+   console.log('clients: ', getClientIDs());
+
+   // Send to client
+   socket.emit('message', 'You are connected!');
+
+   // Send to all clients
+   io.emit('connected clients', getClientIDs());
+
+   // Runs when client disconnects
+   socket.on('disconnect', () => {
+      console.log('Disconnecting client', socket.id)
+      // Send to all clients
+      io.emit('disconnect client', socket.id);
+      io.emit('connected clients', getClientIDs());
+   });
 });
