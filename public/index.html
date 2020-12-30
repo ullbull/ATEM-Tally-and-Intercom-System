@@ -14,20 +14,19 @@
 
    <!-- ------------- -->
 
-   <section class="make-center">
-      <div id="audios-container"></div>
-   </section>
+   <!-- <section class="make-center">
+   </section> -->
 
    <script src="./js/dist/RTCMultiConnection.min.js"></script>
    <script src="./js/adapter.js"></script>
    <script src="./socket.io/socket.io.js"></script>
 
-   <link rel="stylesheet" href="./css/getHTMLMediaElement.css">
+   <!-- <link rel="stylesheet" href="./css/getHTMLMediaElement.css"> -->
    <script src="./js/getHTMLMediaElement.js"></script>
 
 
    <!-- ----------------- -->
-   
+
    <div class="container">
       <header class="header">
          <div class="logo-container">
@@ -39,16 +38,16 @@
       <div class="content-container">
          <div class="panel">
             <h3 class="panel-title" id="panel-title">Active Users:</h3>
-            <div class="active-users-panel" id="active-user-container"></div>
+            <div class="active-users-panel" id="active-user-container">
+               <div id="audios-container"></div>
+            </div>
          </div>
          <div class="audio-chat-container">
-            <h2 class="talk-info" id="talking-with-info">
-               Select active user on the left menu.
-            </h2>
             <p id="my-id">My ID:</p>
             <div class="audio-container">
                <div>
                   <audio autoplay controls id="remote-audio"></audio>
+
                </div>
             </div>
          </div>

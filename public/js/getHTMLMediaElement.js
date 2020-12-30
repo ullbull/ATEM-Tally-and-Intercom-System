@@ -29,7 +29,7 @@ function yey(mediaElement, config) {
 
    var mediaElementContainer = document.createElement('div');
    if (config.title) {
-      mediaElementContainer.innerHTML = `${config.title}<br>`;
+      mediaElementContainer.innerHTML = `User: ${config.title}<br>`;
    }
    mediaElementContainer.appendChild(mediaElement);
    mediaElementContainer.media = mediaElement;

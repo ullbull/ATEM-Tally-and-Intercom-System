@@ -1,9 +1,19 @@
 const express = require('express');
 const socket = require('socket.io');
 const RTCMultiConnectionServer = require('rtcmulticonnection-server');
+const fs = require('fs');
+const https = require('https');
+
+var privateKey = fs.readFileSync( 'fake_keys/111.111.1.59-key.pem' );
+var certificate = fs.readFileSync( 'fake_keys/111.111.1.59.pem' );
 
 const port = 5000;
 const app = express();
+
+// const server = https.createServer({
+//     key: privateKey,
+//     cert: certificate
+// }, app).listen(port);
 
 const server = app.listen(port);
 

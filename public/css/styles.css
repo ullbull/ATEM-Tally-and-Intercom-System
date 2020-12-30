@@ -42,19 +42,30 @@ body {
    overflow: hidden;
 }
 
-.active-users-panel {
+
+.panel {
    width: 300px;
-   height: 100%;
    border-right: 1px solid #cddfe7;
+   /* height: calc(100vh - 89px); */
+   /* display: flex; */
+   /* justify-content: space-between; */
+   /* overflow: hidden; */
 }
 
 .panel-title {
+   height: 30px;
    margin: 10px 0 0 0;
    padding-left: 30px;
+   padding-right: 10px;
+   padding-bottom: 10px;
    font-weight: 500;
    font-size: 18px;
    border-bottom: 1px solid #cddfe7;
-   padding-bottom: 10px;
+}
+
+.active-users-panel {
+   /* width: 100%;
+   height: 100%; */
 }
 
 .my-id {
