@@ -9,9 +9,6 @@ var connection = new RTCMultiConnection();
 // by default, socket.io server is assumed to be deployed on your own URL
 connection.socketURL = '/';
 
-// comment-out below line if you do not have your own socket.io server
-// connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';
-
 connection.socketMessageEvent = 'audio-conference-demo';
 
 connection.session = {
@@ -42,13 +39,7 @@ connection.iceServers = [{
 
 connection.audiosContainer = document.getElementById('audios-container');
 connection.onstream = function (event) {
-   var width = parseInt(connection.audiosContainer.clientWidth / 2) - 20;
-   var mediaElement = yey(event.mediaElement, {
-      title: event.userid,
-      // buttons: ['full-screen'],
-      // width: width,
-      // showOnMouseEnter: true
-   });
+   var mediaElement = yey(event.mediaElement, { title: event.userid });
 
    connection.audiosContainer.appendChild(mediaElement);
 
@@ -68,3 +59,66 @@ connection.onstreamended = function (event) {
 
 // Open or join room
 connection.openOrJoin(roomId);
+
+///////////////////////////////////////////////////////
+
+function createUserItemContainer(socketId, thisUser = false) {
+   const userContainerEl = document.createElement("div");
+   const usernameEl = document.createElement("p");
+
+   userContainerEl.setAttribute("class", "active-user");
+   userContainerEl.setAttribute("id", socketId);
+   usernameEl.setAttribute("class", "username");
+   usernameEl.innerHTML = `User: ${socketId}`;
+
+   userContainerEl.appendChild(usernameEl);
+
+   if (thisUser) {
+      usernameEl.innerHTML = `My id: ${socketId}`;
+      return userContainerEl;
+   }
+
+   userContainerEl.addEventListener("click", () => {
+      console.log(`Clicked ${socketId}`);
+   });
+
+   return userContainerEl;
+}
+
+function updateUserList(socketIds, myId) {
+   const activeUserContainer = document.getElementById("active-user-container");
+   // Set my id
+   document.getElementById("my-id").innerHTML = `My ID: ${myId}`;
+
+   // Clear list
+   while (activeUserContainer.firstChild) {
+      activeUserContainer.removeChild(activeUserContainer.lastChild);
+   }
+
+   // Fill list
+   socketIds.forEach(socketId => {
+      const alreadyExistingUser = document.getElementById(socketId);
+      if (!alreadyExistingUser && socketId != myId) {
+         const userContainerEl = createUserItemContainer(socketId);
+         activeUserContainer.appendChild(userContainerEl);
+      }
+   });
+}
+
+const socket = connection.socket;
+
+function sendData(type, payload) {
+   socket.emit(type, payload);
+}
+
+socket.on('message', (message) => {
+   console.log('Received message:', message);
+});
+
+socket.on("connected clients", (clientIDs) => {
+   updateUserList(clientIDs, socket.id);
+});
+
+socket.on('disconnect client', (clientId) => {
+   console.log('client disconnected:', clientId);
+});
