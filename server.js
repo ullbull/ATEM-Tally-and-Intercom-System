@@ -38,17 +38,4 @@ var config = getValuesFromConfigJson(jsonPath);
 
 io.on('connection', function (socket) {
    RTCMultiConnectionServer.addSocket(socket, config);
-
-   // ----------------------
-   // below code is optional
-
-   const params = socket.handshake.query;
-
-   if (!params.socketCustomEvent) {
-      params.socketCustomEvent = 'custom-message';
-   }
-
-   socket.on(params.socketCustomEvent, function (message) {
-      socket.broadcast.emit(params.socketCustomEvent, message);
-   });
 });
