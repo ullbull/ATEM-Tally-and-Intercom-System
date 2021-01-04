@@ -2,11 +2,7 @@
    "name": "webrtc_test",
    "version": "1.0.0",
    "description": "",
-   "main": "index.js",
-   "scripts": {
-      "start": "ts-node src/index.ts",
-      "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
-   },
+   "main": "server.js",
    "keywords": [],
    "author": "",
    "license": "ISC",

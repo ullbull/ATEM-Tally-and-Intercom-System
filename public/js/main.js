@@ -1,4 +1,7 @@
 const roomId = 'apa';
+const bgColor = document.body.style.backgroundColor;
+const pptColor = 'rgb(131, 131, 131)';
+const toggleTalk = document.getElementById('toggle-talk')
 
 // ......................................................
 // ..................RTCMultiConnection Code.............
@@ -43,11 +46,8 @@ connection.onstream = function (event) {
 
    connection.audiosContainer.appendChild(mediaElement);
 
+   // Pause stream
    mediaElement.media.pause();
-
-   // setTimeout(function () {
-   //    mediaElement.media.pause();
-   // }, 1000);
 
    mediaElement.id = event.streamid;
 };
@@ -74,7 +74,7 @@ connection.openOrJoin(roomId);
 let isMuted = true;
 
 function unmute() {
-   if(!connection.streamEvents.selectFirst({local: true})){
+   if (!connection.streamEvents.selectFirst({ local: true })) {
       return;
    }
 
@@ -85,23 +85,43 @@ function unmute() {
    if (isMuted) {
       firstLocalStream.unmute('both');
       isMuted = false;
+
       console.log('unmuted');
+
+      // Change background color
+      // document.body.style.backgroundColor = pptColor;
+      const x = document.getElementsByClassName('header');
+      for (i = 0; i < x.length; i++) {
+         x[i].style.backgroundColor = pptColor;
+      }
+
+      toggleTalk.innerHTML = 'Mic is on';
    }
 }
 
 function mute() {
-   if(!connection.streamEvents.selectFirst({local: true})){
+   if (!connection.streamEvents.selectFirst({ local: true })) {
       return;
    }
 
    const firstLocalStream = connection.streamEvents.selectFirst({
       local: true
    }).stream;
-   
+
    if (!isMuted) {
       firstLocalStream.mute('both');
       isMuted = true;
+
       console.log('muted');
+
+      // Change background color
+      // document.body.style.backgroundColor = bgColor;
+      const x = document.getElementsByClassName('header');
+      for (i = 0; i < x.length; i++) {
+         x[i].style.backgroundColor = bgColor;
+      }
+
+      toggleTalk.innerHTML = 'Mic is off';
    }
 }
 
@@ -115,31 +135,32 @@ window.addEventListener('keydown', event => {
    }
 });
 
-const pptButton = document.getElementById('ppt-button');
-
-pptButton.onmousedown = function(event) {
-   unmute();
-}
-pptButton.ontouchstart = function(event) {
-   unmute();
-}
-
-pptButton.onmouseup = function(event) {
-   mute();
-}
-pptButton.ontouchend = function(event) {
-   mute();
-}
-
 window.addEventListener('keyup', event => {
    console.log(`${event.key} up`);
    console.log('connection', connection);
 
-   
+
    if (event.key == 'Shift') {
       mute();
    }
 });
+
+window.addEventListener('touchstart', event => {
+   unmute();
+});
+
+window.addEventListener('touchend', event => {
+   mute();
+});
+
+toggleTalk.onclick = event => {
+   if (isMuted) {
+      unmute();
+   }
+   else {
+      mute();
+   }
+}
 
 function createUserItemContainer(socketId, thisUser = false) {
    const userContainerEl = document.createElement("div");

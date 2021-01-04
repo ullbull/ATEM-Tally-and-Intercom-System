@@ -20,8 +20,6 @@ const server = app.listen(port);
 // Host public files
 app.use(express.static('public'));
 
-console.log('WebRTC test');
-
 const io = socket(server);
 
 const jsonPath = {
