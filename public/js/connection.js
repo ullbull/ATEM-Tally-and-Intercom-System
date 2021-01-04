@@ -1,3 +1,43 @@
+import * as talk from './talk.js';
+
+function getElement(mediaElement, config) {
+   console.log('!½!!!!!', mediaElement);
+   config = config || {};
+
+   if (!mediaElement.nodeName || (mediaElement.nodeName.toLowerCase() != 'audio' && mediaElement.nodeName.toLowerCase() != 'video')) {
+      if (!mediaElement.getVideoTracks().length) {
+         return getAudioElement(mediaElement, config);
+      }
+
+      var mediaStream = mediaElement;
+      mediaElement = document.createElement(mediaStream.getVideoTracks().length ? 'video' : 'audio');
+
+      try {
+         mediaElement.setAttributeNode(document.createAttribute('autoplay'));
+         mediaElement.setAttributeNode(document.createAttribute('playsinline'));
+      } catch (e) {
+         mediaElement.setAttribute('autoplay', true);
+         mediaElement.setAttribute('playsinline', true);
+      }
+
+      if ('srcObject' in mediaElement) {
+         mediaElement.srcObject = mediaStream;
+      } else {
+         mediaElement[!!navigator.mozGetUserMedia ? 'mozSrcObject' : 'src'] = !!navigator.mozGetUserMedia ? mediaStream : (window.URL || window.webkitURL).createObjectURL(mediaStream);
+      }
+   }
+
+
+   var mediaElementContainer = document.createElement('div');
+   if (config.title) {
+      mediaElementContainer.innerHTML = `User: ${config.title}<br>`;
+   }
+   mediaElementContainer.appendChild(mediaElement);
+   mediaElementContainer.media = mediaElement;
+
+   return mediaElementContainer;
+}
+
 // ......................................................
 // ..................RTCMultiConnection Code.............
 // ......................................................
@@ -15,9 +55,30 @@ connection.session = {
 };
 
 connection.mediaConstraints = {
-   audio: true,
-   video: false
+   video: false,
+   audio: {
+      mandatory: {
+         echoCancellation: false, // disabling audio processing
+         googAutoGainControl: true,
+         googNoiseSuppression: true,
+         googHighpassFilter: true,
+         //googAudioMirroring: true
+      },
+      optional: []
+   }
 };
+
+if (DetectRTC.browser.name === 'Firefox') {
+   connection.mediaConstraints = {
+      audio: true,
+      video: false
+   };
+}
+
+// connection.mediaConstraints = {
+//    audio: true,
+//    video: false
+// };
 
 connection.sdpConstraints.mandatory = {
    OfferToReceiveAudio: true,
@@ -37,22 +98,30 @@ connection.iceServers = [{
 
 connection.audiosContainer = document.getElementById('audios-container');
 connection.onstream = function (event) {
-   var mediaElement = yey(event.mediaElement, { title: event.userid });
-
-   connection.audiosContainer.appendChild(mediaElement);
+   console.log('Incoming stream: ', event);
+   console.log('connection.streamEvents: ', connection.streamEvents);
+   const mediaElement = getElement(event.mediaElement, { title: event.userid });
 
    // Pause stream
-   mediaElement.media.pause();
+   if (event.extra.isMuted) {
+      mediaElement.media.pause();
+   }
 
    mediaElement.id = event.streamid;
+   connection.audiosContainer.appendChild(mediaElement);
 };
 
 connection.onstreamended = function (event) {
-   var mediaElement = document.getElementById(event.streamid);
+   const mediaElement = document.getElementById(event.streamid);
    if (mediaElement) {
       mediaElement.parentNode.removeChild(mediaElement);
    }
 };
+
+connection.extra = {
+   id: connection.userid,
+   isMuted: true
+}
 
 export {
    connection

@@ -10,18 +10,24 @@ connection.openOrJoin(roomId);
 
 ///////////////////////////////////////////////////////
 
+
+// connection.onExtraDataUpdated = function (event) {
+//    console.log('extra:', event);
+// };
+
 // Mute my stream
 // setTimeout(function () {
-//    const myStream = connection.streamEvents.selectFirst({
-//       local: true
-//    }).stream;
-//    myStream.talk.mute(connection'both');
-// }, 1000);
-
+//    // const myStream = connection.streamEvents.selectFirst({
+//    //    local: true
+//    // }).stream;
+//    // myStream.mute('both');
+//    talk.mute(connection);
+// }, 100);
 
 window.onkeydown = event => {
    if (event.shiftKey) {
-      talk.unmute(connection);
+      talk.unmute();
+      // connection.extra.isMuted = talk.isMuted;
    }
 
    if (event.ctrlKey) {
@@ -35,24 +41,24 @@ window.onkeyup = event => {
 
 
    if (event.key == 'Shift') {
-      talk.mute(connection);
+      talk.mute();
    }
 }
 
 window.ontouchstart = event => {
-   talk.unmute(connection);
+   talk.unmute();
 }
 
 window.ontouchend = event => {
-   talk.mute(connection);
+   talk.mute();
 }
 
 toggleTalk.onclick = event => {
    if (talk.isMuted) {
-      talk.unmute(connection);
+      talk.unmute();
    }
    else {
-      talk.mute(connection);
+      talk.mute();
    }
 }
 

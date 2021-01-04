@@ -1,9 +1,11 @@
+import { connection } from './connection.js';
+
 const bgColor = document.body.style.backgroundColor;
 const pptColor = 'rgb(131, 131, 131)';
 const toggleTalk = document.getElementById('toggle-talk')
 let isMuted = true;
 
-function unmute(connection) {
+function unmute() {
    if (!connection.streamEvents.selectFirst({ local: true })) {
       return;
    }
@@ -11,12 +13,18 @@ function unmute(connection) {
    const firstLocalStream = connection.streamEvents.selectFirst({
       local: true
    }).stream;
+   // const thisStreamEvent = connection.streamEvents[firstLocalStream.id];
 
    if (isMuted) {
+      
       firstLocalStream.unmute('both');
       isMuted = false;
-
       console.log('unmuted');
+      
+      connection.extra.isMuted = isMuted;
+      connection.updateExtraData();
+
+      console.log('connection.streamEvents: ', connection.streamEvents);
 
       // Change background color
       // document.body.style.backgroundColor = pptColor;
@@ -29,7 +37,7 @@ function unmute(connection) {
    }
 }
 
-function mute(connection) {
+function mute() {
    if (!connection.streamEvents.selectFirst({ local: true })) {
       return;
    }
@@ -37,12 +45,15 @@ function mute(connection) {
    const firstLocalStream = connection.streamEvents.selectFirst({
       local: true
    }).stream;
+   // const thisStreamEvent = connection.streamEvents[firstLocalStream.id];
 
    if (!isMuted) {
       firstLocalStream.mute('both');
       isMuted = true;
-
       console.log('muted');
+
+      connection.extra.isMuted = isMuted;
+      connection.updateExtraData();
 
       // Change background color
       // document.body.style.backgroundColor = bgColor;
