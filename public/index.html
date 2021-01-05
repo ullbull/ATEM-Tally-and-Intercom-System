@@ -39,9 +39,11 @@
             <div class="center" id="select-camera-div">
                <p class="select-camera">Select camera</p>
                <div class="select-camera">
-                  <input class="select-camera" id="camera-id" type="number" id="camera-select" name="camera-id" value="1" min="1" max="20"
-                     style="width: 2em" onfocus="this.select();">
-                  <button class="select-camera" id="select-camera-button">Select</button>
+                  <form action="/test">
+                     <input class="select-camera" id="camera-id" type="number" id="camera-select" name="cam"
+                        value="1" min="1" max="20" style="width: 2em" onfocus="this.select();">
+                     <input class="select-camera" id="submit-button" type="submit" value="Select">
+                  </form>
                </div>
             </div>
             <h3>Hold down Shift or tap screen to talk</h3>

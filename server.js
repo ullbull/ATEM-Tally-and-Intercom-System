@@ -82,3 +82,21 @@ io.on('connection', function (socket) {
       io.emit('connected clients', getClientIDs());
    });
 });
+
+
+
+////////////////////
+
+
+app.get('/test', (request, res) => {
+   // Get desired camID
+   const camID = request.query.cam
+   res.redirect(`/?cam=${camID}`);
+});
+
+// app.post('/test', (request, response) => {
+//    console.log('Receiving data!');
+//    console.log('post');
+//    console.log(request.query);
+//    response.json({ message: 'thanks' });
+// });

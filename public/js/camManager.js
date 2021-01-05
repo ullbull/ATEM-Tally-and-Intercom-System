@@ -1,19 +1,24 @@
 import * as cts from './connectionToServer.js';
 
-let camera = 0;
-const selectCameraDiv = document.getElementById('select-camera-div');
-console.log('selectCameraElements', selectCameraDiv);
+// const selectCameraDiv = document.getElementById('select-camera-div');
 const bgColor = document.body.style.backgroundColor;
 const programColor = 'rgb(197, 68, 68)';
 const previewColor = 'rgb(71, 194, 97)';
+const minCamId = 1;
+const maxCamId = 20;
 
-document.getElementById('select-camera-button').onclick = () => {
-   camera = document.getElementById('camera-id').value;
-   selectCameraDiv.remove();
+// Set this camera
+const urlParams = new URLSearchParams(window.location.search);
+let camera = urlParams.get('cam');
+
+// Check if camera was set properly
+if (camera >= minCamId && camera <= maxCamId) {
+   // Remove select-camera-div
+   document.getElementById('select-camera-div').remove();
+   
    addCameraDiv();
-
-   // Get ATEM status
-   cts.sendData('ATEM get status');
+} else {
+   console.log('no camera', camera);
 }
 
 function addCameraDiv() {
