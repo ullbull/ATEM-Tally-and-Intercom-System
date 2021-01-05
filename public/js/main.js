@@ -1,19 +1,16 @@
 import * as talk from './talk.js';
-import * as users from './users.js';
 import { connection } from './connection.js';
+import * as cts from './connectionToServer.js';
+import * as selectCamera from './selectCamera.js';
 
 const roomId = 'apa';
 const toggleTalk = document.getElementById('toggle-talk')
+const program = document.getElementById('program')
 
 // Open or join room
 connection.openOrJoin(roomId);
 
 ///////////////////////////////////////////////////////
-
-
-// connection.onExtraDataUpdated = function (event) {
-//    console.log('extra:', event);
-// };
 
 // Mute my stream
 // setTimeout(function () {
@@ -45,16 +42,16 @@ window.onkeyup = event => {
    }
 
    if (event.key == '1') {
-      sendData('ATEM', 1);
+      cts.sendData('ATEM', 1);
    }
    if (event.key == '2') {
-      sendData('ATEM', 2);
+      cts.sendData('ATEM', 2);
    }
    if (event.key == '3') {
-      sendData('ATEM', 3);
+      cts.sendData('ATEM', 3);
    }
-      if (event.key == '4') {
-      sendData('ATEM', 4);
+   if (event.key == '4') {
+      cts.sendData('ATEM', 4);
    }
 }
 
@@ -75,20 +72,26 @@ toggleTalk.onclick = event => {
    }
 }
 
-const socket = connection.socket;
 
-function sendData(type, payload) {
-   socket.emit(type, payload);
-}
+// const socket = connection.socket;
 
-socket.on('message', (message) => {
-   console.log('Received message:', message);
-});
+// function sendData(type, payload) {
+//    socket.emit(type, payload);
+// }
 
-socket.on("connected clients", (clientIDs) => {
-   users.updateUserList(clientIDs, socket.id);
-});
+// socket.on('message', (message) => {
+//    console.log('Received message:', message);
+// });
 
-socket.on('disconnect client', (clientId) => {
-   console.log('client disconnected:', clientId);
-});
+// socket.on('ATEM', num => {
+//    console.log('ATEM:', num);
+//    program.innerHTML = num;
+// });
+
+// socket.on("connected clients", (clientIDs) => {
+//    users.updateUserList(clientIDs, socket.id);
+// });
+
+// socket.on('disconnect client', (clientId) => {
+//    console.log('client disconnected:', clientId);
+// });

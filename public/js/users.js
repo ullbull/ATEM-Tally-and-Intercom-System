@@ -24,7 +24,7 @@ function createUserItemContainer(socketId, thisUser = false) {
 function updateUserList(socketIds, myId) {
    const activeUserContainer = document.getElementById("active-user-container");
    // Set my id
-   document.getElementById("my-id").innerHTML = `My ID: ${myId}`;
+   // document.getElementById("my-id").innerHTML = `My ID: ${myId}`;
 
    // Clear list
    while (activeUserContainer.firstChild) {

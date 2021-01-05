@@ -3,6 +3,7 @@ const socket = require('socket.io');
 const RTCMultiConnectionServer = require('rtcmulticonnection-server');
 const fs = require('fs');
 const https = require('https');
+const atemWatcher = require('./atemWatcher.js');
 
 var privateKey = fs.readFileSync( 'fake_keys/111.111.1.59-key.pem' );
 var certificate = fs.readFileSync( 'fake_keys/111.111.1.59.pem' );
@@ -54,9 +55,18 @@ io.on('connection', function (socket) {
 
    // Send to client
    socket.emit('message', 'You are connected!');
+   socket.emit('ATEM', atemWatcher.getProgram())
 
    // Send to all clients
    io.emit('connected clients', getClientIDs());
+
+   socket.on('ATEM', num => {
+      console.log('ATEM:', num);
+      atemWatcher.setProgram(num);
+
+      // Send to all clients
+      io.emit('ATEM', num);
+   })
 
    // Runs when client disconnects
    socket.on('disconnect', () => {

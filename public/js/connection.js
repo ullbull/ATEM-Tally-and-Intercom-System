@@ -27,10 +27,13 @@ function getElement(mediaElement, config) {
       }
    }
 
-
    var mediaElementContainer = document.createElement('div');
    if (config.title) {
-      mediaElementContainer.innerHTML = `User: ${config.title}<br>`;
+      if (config.title == config.myId) {
+         mediaElementContainer.innerHTML = `My id: ${config.title}<br>`;
+      } else {
+         mediaElementContainer.innerHTML = `User: ${config.title}<br>`;
+      }
    }
    mediaElementContainer.appendChild(mediaElement);
    mediaElementContainer.media = mediaElement;
@@ -47,7 +50,7 @@ var connection = new RTCMultiConnection();
 // by default, socket.io server is assumed to be deployed on your own URL
 connection.socketURL = '/';
 
-connection.socketMessageEvent = 'audio-conference-demo';
+// connection.socketMessageEvent = 'audio-conference-demo';
 
 connection.session = {
    audio: true,
@@ -77,9 +80,13 @@ connection.iceServers = [{
 
 connection.audiosContainer = document.getElementById('audios-container');
 connection.onstream = function (event) {
-   console.log('Incoming stream: ', event);
-   console.log('connection.streamEvents: ', connection.streamEvents);
-   const mediaElement = getElement(event.mediaElement, { title: event.userid });
+   const mediaElement = getElement(event.mediaElement, { title: event.userid, myId: connection.userid });
+
+   // Change appearance of my stream
+   if (event.extra.userid == connection.userid) {
+      event.mediaElement.classList.add('my-audio');
+   }
+
    connection.audiosContainer.appendChild(mediaElement);
 
    // Pause stream
@@ -99,7 +106,7 @@ connection.onstreamended = function (event) {
 };
 
 connection.extra = {
-   id: connection.userid,
+   userid: connection.userid,
    isMuted: true
 }
 
