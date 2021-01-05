@@ -5,8 +5,8 @@ const fs = require('fs');
 const https = require('https');
 const atemWatcher = require('./atemWatcher.js');
 
-var privateKey = fs.readFileSync( 'fake_keys/111.111.1.59-key.pem' );
-var certificate = fs.readFileSync( 'fake_keys/111.111.1.59.pem' );
+var privateKey = fs.readFileSync('fake_keys/111.111.1.59-key.pem');
+var certificate = fs.readFileSync('fake_keys/111.111.1.59.pem');
 
 const port = 5000;
 const app = express();
@@ -55,17 +55,23 @@ io.on('connection', function (socket) {
 
    // Send to client
    socket.emit('message', 'You are connected!');
-   socket.emit('ATEM', atemWatcher.getProgram())
+   socket.emit('ATEM', atemWatcher.getProgPrev());
 
    // Send to all clients
    io.emit('connected clients', getClientIDs());
 
-   socket.on('ATEM', num => {
-      console.log('ATEM:', num);
-      atemWatcher.setProgram(num);
+   socket.on('ATEM', ({ program, preview }) => {
+      console.log('ATEM program:', program);
+      console.log('ATEM preview:', preview);
+      atemWatcher.setProgram(program);
+      atemWatcher.setPreview(preview);
 
       // Send to all clients
-      io.emit('ATEM', num);
+      io.emit('ATEM', { program, preview });
+   })
+
+   socket.on('ATEM get status', () => {
+      socket.emit('ATEM', atemWatcher.getProgPrev());
    })
 
    // Runs when client disconnects
