@@ -43,6 +43,19 @@ window.onkeyup = event => {
    if (event.key == 'Shift') {
       talk.mute();
    }
+
+   if (event.key == '1') {
+      sendData('ATEM', 1);
+   }
+   if (event.key == '2') {
+      sendData('ATEM', 2);
+   }
+   if (event.key == '3') {
+      sendData('ATEM', 3);
+   }
+      if (event.key == '4') {
+      sendData('ATEM', 4);
+   }
 }
 
 window.ontouchstart = event => {

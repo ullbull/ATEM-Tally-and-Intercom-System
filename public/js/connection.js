@@ -55,30 +55,9 @@ connection.session = {
 };
 
 connection.mediaConstraints = {
-   video: false,
-   audio: {
-      mandatory: {
-         echoCancellation: false, // disabling audio processing
-         googAutoGainControl: true,
-         googNoiseSuppression: true,
-         googHighpassFilter: true,
-         //googAudioMirroring: true
-      },
-      optional: []
-   }
+   audio: true,
+   video: false
 };
-
-if (DetectRTC.browser.name === 'Firefox') {
-   connection.mediaConstraints = {
-      audio: true,
-      video: false
-   };
-}
-
-// connection.mediaConstraints = {
-//    audio: true,
-//    video: false
-// };
 
 connection.sdpConstraints.mandatory = {
    OfferToReceiveAudio: true,
@@ -101,14 +80,15 @@ connection.onstream = function (event) {
    console.log('Incoming stream: ', event);
    console.log('connection.streamEvents: ', connection.streamEvents);
    const mediaElement = getElement(event.mediaElement, { title: event.userid });
+   connection.audiosContainer.appendChild(mediaElement);
 
    // Pause stream
    if (event.extra.isMuted) {
-      mediaElement.media.pause();
+      // mediaElement.media.pause();
+      event.stream.mute('both');
    }
 
    mediaElement.id = event.streamid;
-   connection.audiosContainer.appendChild(mediaElement);
 };
 
 connection.onstreamended = function (event) {
