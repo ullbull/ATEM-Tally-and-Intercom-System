@@ -1,6 +1,3 @@
-import * as cts from './connectionToServer.js';
-
-// const selectCameraDiv = document.getElementById('select-camera-div');
 const bgColor = document.body.style.backgroundColor;
 const programColor = 'rgb(197, 68, 68)';
 const previewColor = 'rgb(71, 194, 97)';
@@ -11,11 +8,12 @@ const maxCamId = 20;
 const urlParams = new URLSearchParams(window.location.search);
 let camera = urlParams.get('cam');
 
-// Check if camera was set properly
+// Validate camera value
 if (camera >= minCamId && camera <= maxCamId) {
+   // Camera value is approved!
    // Remove select-camera-div
    document.getElementById('select-camera-div').remove();
-   
+
    addCameraDiv();
 } else {
    console.log('no camera', camera);
@@ -50,11 +48,13 @@ function camFree() {
 }
 
 function changeColorTo(color) {
+   // const x = document.getElementsByClassName('content-container');
+   // for (let i = 0; i < x.length; i++) {
+   //    x[i].style.backgroundColor = color;
+   // }
+
    // Change background color
-   const x = document.getElementsByClassName('content-container');
-   for (let i = 0; i < x.length; i++) {
-      x[i].style.backgroundColor = color;
-   }
+   document.body.style.backgroundColor = color;
 }
 
 export {
