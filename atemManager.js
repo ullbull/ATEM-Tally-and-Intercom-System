@@ -1,7 +1,6 @@
 var Atem = require('atem') // Load the atem module
 const fileManager = require('./fileManager.js');
 
-const config = fileManager.loadConfig();
 const defaultIp = '192.168.1.225'
 
 const atemSwitcher = new Atem()
@@ -64,6 +63,7 @@ function setPreview(preview) {
 }
 
 module.exports = {
+   atemSwitcher,
    setProgram,
    setPreview,
    getProgPrev,

@@ -1,16 +1,17 @@
 const express = require('express');
 const socket = require('socket.io');
 const RTCMultiConnectionServer = require('rtcmulticonnection-server');
-const fs = require('fs');
-const https = require('https');
+// const fs = require('fs');
+// const https = require('https');
+const simulateAtemSwitcher = require('./simulateAtemSwitcher.js');
 const atemManager = require('./atemManager.js');
 const fileManager = require('./fileManager.js');
 
-var privateKey = fs.readFileSync('fake_keys/111.111.1.59-key.pem');
-var certificate = fs.readFileSync('fake_keys/111.111.1.59.pem');
-
 const port = 5000;
 const app = express();
+
+// var privateKey = fs.readFileSync('fake_keys/111.111.1.59-key.pem');
+// var certificate = fs.readFileSync('fake_keys/111.111.1.59.pem');
 
 // const server = https.createServer({
 //     key: privateKey,
@@ -23,6 +24,7 @@ const server = app.listen(port);
 app.use(express.static('public'));
 
 const io = socket(server);
+simulateAtemSwitcher.init(io);
 
 const jsonPath = {
    config: 'config.json',
@@ -56,24 +58,9 @@ io.on('connection', function (socket) {
 
    // Send to client
    socket.emit('message', 'You are connected!');
-   socket.emit('ATEM', atemManager.getProgPrev());
 
    // Send to all clients
    io.emit('connected clients', getClientIDs());
-
-   socket.on('ATEM', ({ program, preview }) => {
-      console.log('ATEM program:', program);
-      console.log('ATEM preview:', preview);
-      atemManager.setProgram(program);
-      atemManager.setPreview(preview);
-
-      // Send to all clients
-      io.emit('ATEM', { program, preview });
-   })
-
-   socket.on('ATEM get status', () => {
-      socket.emit('ATEM', atemManager.getProgPrev());
-   })
 
    // Runs when client disconnects
    socket.on('disconnect', () => {
@@ -84,6 +71,11 @@ io.on('connection', function (socket) {
    });
 });
 
+const atem = atemManager.atemSwitcher;
+
+atem.on('connectionStateChange', state => {
+   io.emit('message', 'state:' + state.description);
+});
 
 
 ////////////////////
