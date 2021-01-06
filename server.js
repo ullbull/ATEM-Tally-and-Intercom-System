@@ -1,11 +1,11 @@
+const simulateAtemSwitcher = require('./simulateAtemSwitcher.js');
 const express = require('express');
 const socket = require('socket.io');
 const RTCMultiConnectionServer = require('rtcmulticonnection-server');
 // const fs = require('fs');
 // const https = require('https');
-const simulateAtemSwitcher = require('./simulateAtemSwitcher.js');
-const atemManager = require('./atemManager.js');
 const fileManager = require('./fileManager.js');
+const atemManager = require('./atemManager.js');
 
 const port = 5000;
 const app = express();
@@ -24,6 +24,8 @@ const server = app.listen(port);
 app.use(express.static('public'));
 
 const io = socket(server);
+
+atemManager.init(io);
 simulateAtemSwitcher.init(io);
 
 const jsonPath = {
@@ -71,15 +73,7 @@ io.on('connection', function (socket) {
    });
 });
 
-const atem = atemManager.atemSwitcher;
-
-atem.on('connectionStateChange', state => {
-   io.emit('message', 'state:' + state.description);
-});
-
-
 ////////////////////
-
 
 app.get('/select-cam', (request, response) => {
    // Get desired camID

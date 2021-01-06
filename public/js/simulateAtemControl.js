@@ -12,7 +12,7 @@ function keyUp(event) {
       preview = event.which - 48;
    }
 
-   cts.sendData('ATEM', { program, preview });
+   cts.sendData('simulate ATEM', { program, preview });
 }
 
 function switchProgramPreview() {

@@ -13,20 +13,6 @@ socket.on('message', (message) => {
    console.log('Received message:', message);
 });
 
-socket.on('ATEM', ({ program, preview }) => {
-   console.log('ATEM program:', program);
-   console.log('ATEM preview:', preview);
-   programElement.innerHTML = program;
-   const camID = camManager.getCameraId();
-   if (camID == program) {
-      camManager.camOnProgram();
-   } else if ( camID == preview) {
-      camManager.camOnPreview();
-   } else {
-      camManager.camFree();
-   }
-});
-
 socket.on("connected clients", (clientIDs) => {
    users.updateUserList(clientIDs, socket.id);
 });

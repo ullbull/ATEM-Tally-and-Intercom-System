@@ -28,6 +28,20 @@ atemSwitcher.on('error', function (e) {
    console.log(e)
 });
 
+function init(io) {
+   io.on('connection', function (socket) {
+      // Send to client
+      socket.emit('ATEM', getProgPrev());
+
+      socket.on('ATEM get status', () => {
+         socket.emit('ATEM', getProgPrev());
+      })
+   });
+
+   atemSwitcher.on('previewBus', previewBus => {
+      io.emit('previewBus', previewBus);
+   });
+}
 
 function reconnect(ip) {
    atemSwitcher.disconnect();
@@ -35,6 +49,8 @@ function reconnect(ip) {
    console.log(`Connecting atem at ${atemSwitcher.ip}`);
    atemSwitcher.connect();
 }
+
+///////////////////////////////////////
 
 let Program = 0;
 let Preview = 0;
@@ -63,6 +79,7 @@ function setPreview(preview) {
 }
 
 module.exports = {
+   init,
    atemSwitcher,
    setProgram,
    setPreview,
