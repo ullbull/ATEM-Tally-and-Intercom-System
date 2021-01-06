@@ -29,7 +29,7 @@ function init(io) {
 
    atemSwitcher.on('connectionStateChange', function (state) {
       console.log('state', state);
-      io.emit('message', 'Atem switcher state: ' + state.description);
+      io.emit('connectionStateChange', state);
    });
    
    atemSwitcher.on('connectionLost', function () {

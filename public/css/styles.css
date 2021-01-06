@@ -167,8 +167,9 @@ body {
    position: relative;
 }
 
-#atem-switcher-state {
-   margin-top: 10px;
+.atem-switcher-state {
+   display: inline-block;
+   margin-top: 5px;
    margin-bottom: 0px;
 }
 

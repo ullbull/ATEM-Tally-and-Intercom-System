@@ -1,5 +1,5 @@
 import * as users from './users.js';
-import * as camManager from './camManager.js';
+import * as atemManager from './atemManager.js';
 
 const programElement = document.getElementById('program')
 
@@ -10,7 +10,7 @@ function sendData(type, payload) {
 }
 
 socket.on('message', (message) => {
-   console.log('Received message:', message);
+   console.log('Received message:', message)
 });
 
 socket.on("connected clients", clientIDs => {
@@ -21,15 +21,20 @@ socket.on('ATEM', ({ program, preview }) => {
    console.log('ATEM program:', program);
    console.log('ATEM preview:', preview);
    programElement.innerHTML = program;
-   const camID = camManager.getCameraId();
+   const camID = atemManager.getCameraId();
    if (camID == program) {
-      camManager.camOnProgram();
+      atemManager.camOnProgram();
    } else if ( camID == preview) {
-      camManager.camOnPreview();
+      atemManager.camOnPreview();
    } else {
-      camManager.camFree();
+      atemManager.camFree();
    }
 });
+
+socket.on('connectionStateChange', state => {
+   const stateElement = document.getElementById("atem-switcher-state");
+   stateElement.innerHTML = state.description;
+})
 
 socket.on('disconnect client', clientId => {
    console.log('client disconnected:', clientId);
