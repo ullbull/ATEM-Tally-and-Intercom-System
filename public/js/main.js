@@ -1,6 +1,6 @@
 import * as talk from './talk.js';
 import { connection } from './connection.js';
-import * as atemControl from './atemControl.js';
+import * as simulateAtemControl from './simulateAtemControl.js';
 
 const roomId = 'apa';
 const toggleTalk = document.getElementById('toggle-talk')
@@ -31,7 +31,7 @@ window.onkeydown = event => {
 }
 
 window.onkeyup = event => {
-   atemControl.keyUp(event);
+   simulateAtemControl.keyUp(event);
 
    console.log(`${event.key} up`);
    console.log('event', event);
