@@ -2,19 +2,17 @@ var Atem = require('atem') // Load the atem module
 const fileManager = require('./fileManager.js');
 
 const config = fileManager.loadConfig();
+const defaultIp = '192.168.1.225'
 
 const atemSwitcher = new Atem()
 
-// Get ip address for Atem switcher
-if (!config.ip) {
-   config.ip = '192.168.1.225';
-   fileManager.saveConfig(config);
-}
-atemSwitcher.ip = config.ip;
+// Get saved ip address
+atemSwitcher.ip = fileManager.loadConfig().ip || defaultIp;
 
-// Connect to Atem switcher
-console.log(`Connecting to atem at ${atemSwitcher.ip}`);
+// Connect Atem switcher
+console.log(`Connecting atem at ${atemSwitcher.ip}`);
 atemSwitcher.connect()
+
 console.log('state', atemSwitcher.state);
 
 setTimeout(atemSwitcher.connect, 4000);
@@ -31,6 +29,13 @@ atemSwitcher.on('error', function (e) {
    console.log(e)
 });
 
+
+function reconnect(ip) {
+   atemSwitcher.disconnect();
+   atemSwitcher.ip = ip;
+   console.log(`Connecting atem at ${atemSwitcher.ip}`);
+   atemSwitcher.connect();
+}
 
 let Program = 0;
 let Preview = 0;
@@ -63,5 +68,6 @@ module.exports = {
    setPreview,
    getProgPrev,
    getProgram,
-   getPreview
+   getPreview,
+   reconnect
 }

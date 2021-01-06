@@ -40,7 +40,7 @@ function saveFile(data, filename) {
    // Make easy to read data string
    const dataString = JSON.stringify(data, null, 2);
 
-   const tempFilePath = path + filename + 'tmp';
+   const tempFilePath = path + filename + '_tmp';
    const filePath = path + filename;
 
    // Save temporary file
@@ -59,15 +59,6 @@ function saveFile(data, filename) {
          }
       });
 
-      // Remove temporary file
-      fs.unlink(tempFilePath, (err) => {
-         if (err) {
-            console.error(err)
-            return
-         }
-
-         // Temporary file removed
-      })
       console.log('Saved the file ', filePath);
    });
 }

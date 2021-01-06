@@ -3,7 +3,7 @@ const socket = require('socket.io');
 const RTCMultiConnectionServer = require('rtcmulticonnection-server');
 const fs = require('fs');
 const https = require('https');
-const atemWatcher = require('./atemWatcher.js');
+const atemManager = require('./atemManager.js');
 const fileManager = require('./fileManager.js');
 
 var privateKey = fs.readFileSync('fake_keys/111.111.1.59-key.pem');
@@ -56,7 +56,7 @@ io.on('connection', function (socket) {
 
    // Send to client
    socket.emit('message', 'You are connected!');
-   socket.emit('ATEM', atemWatcher.getProgPrev());
+   socket.emit('ATEM', atemManager.getProgPrev());
 
    // Send to all clients
    io.emit('connected clients', getClientIDs());
@@ -64,15 +64,15 @@ io.on('connection', function (socket) {
    socket.on('ATEM', ({ program, preview }) => {
       console.log('ATEM program:', program);
       console.log('ATEM preview:', preview);
-      atemWatcher.setProgram(program);
-      atemWatcher.setPreview(preview);
+      atemManager.setProgram(program);
+      atemManager.setPreview(preview);
 
       // Send to all clients
       io.emit('ATEM', { program, preview });
    })
 
    socket.on('ATEM get status', () => {
-      socket.emit('ATEM', atemWatcher.getProgPrev());
+      socket.emit('ATEM', atemManager.getProgPrev());
    })
 
    // Runs when client disconnects
@@ -108,6 +108,9 @@ app.get('/save.config', (request, response) => {
    config.ip = data['atem-ip'];
 
    fileManager.saveConfig(config);
-   
+
+   // Reconnect atem switcher with new ip
+   atemManager.reconnect(config.ip);
+
    response.redirect(`/`);
 });
