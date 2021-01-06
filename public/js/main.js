@@ -1,6 +1,5 @@
 import * as talk from './talk.js';
 import { connection } from './connection.js';
-import * as simulateAtemConnectionToServer from './simulateAtemConnectionToServer.js';
 import * as simulateAtemControl from './simulateAtemControl.js';
 
 const roomId = 'apa';

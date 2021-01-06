@@ -12,11 +12,11 @@ function init(io) {
          simulateAtemManager.setPreview(preview);
 
          // Send to all clients
-         io.emit('simulate ATEM', { program, preview });
+         io.emit('ATEM', { program, preview });
       })
 
       socket.on('ATEM get status', () => {
-         socket.emit('simulate ATEM', simulateAtemManager.getProgPrev());
+         socket.emit('ATEM', simulateAtemManager.getProgPrev());
       })
 
    });

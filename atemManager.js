@@ -41,6 +41,10 @@ function init(io) {
    atemSwitcher.on('previewBus', previewBus => {
       io.emit('previewBus', previewBus);
    });
+
+   atemSwitcher.on('programBus', programBus => {
+      io.emit('programBus', programBus);
+   });
 }
 
 function reconnect(ip) {
