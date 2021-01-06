@@ -4,6 +4,7 @@ const RTCMultiConnectionServer = require('rtcmulticonnection-server');
 const fs = require('fs');
 const https = require('https');
 const atemWatcher = require('./atemWatcher.js');
+const fileManager = require('./fileManager.js');
 
 var privateKey = fs.readFileSync('fake_keys/111.111.1.59-key.pem');
 var certificate = fs.readFileSync('fake_keys/111.111.1.59.pem');
@@ -88,15 +89,25 @@ io.on('connection', function (socket) {
 ////////////////////
 
 
-app.get('/test', (request, res) => {
+app.get('/select-cam', (request, response) => {
    // Get desired camID
    const camID = request.query.cam
-   res.redirect(`/?cam=${camID}`);
+   response.redirect(`/?cam=${camID}`);
 });
 
-// app.post('/test', (request, response) => {
-//    console.log('Receiving data!');
-//    console.log('post');
-//    console.log(request.query);
-//    response.json({ message: 'thanks' });
-// });
+app.get('/get-config', (request, response) => {
+   const config = fileManager.loadFile('atem-config.json');
+   response.json(config);
+});
+
+app.get('/save.config', (request, response) => {
+   const data = request.query;
+   console.log('Receiving config data!', data);
+
+   const config = fileManager.loadConfig();
+   config.ip = data['atem-ip'];
+
+   fileManager.saveConfig(config);
+   
+   response.redirect(`/`);
+});

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+   <title>Config ATEM Intercom and Tally System</title>
+
+   <link rel="stylesheet" href="./css/styles.css" />
+</head>
+
+<body>
+   <script src="./socket.io/socket.io.js"></script>
+
+   <div class="container" id="container">
+      <header class="header">
+         <div class="logo-container">
+            <h1 class="logo-text">
+               Config
+            </h1>
+         </div>
+      </header>
+      <div class="content-container">
+         <div class="settings-container" id="main-container">
+            <form action="/save.config">
+               <label for="fname">IP address:</label>
+               <input id="atem-ip-input" type="text" id="atem-ip" name="atem-ip"><br>
+               <input type="submit" value="Save">
+             </form> 
+         </div>
+      </div>
+   </div>
+
+   <script src="/socket.io/socket.io.js"></script>
+   <script type="module" src="./js/config.js"></script>
+</body>
+
+</html>

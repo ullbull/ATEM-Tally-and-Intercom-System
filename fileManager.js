@@ -1,10 +1,21 @@
 const fs = require('fs');
 
 const path = './';
+const configFilename = 'atem-config.json';
+
+// Loads the config file
+function loadConfig() {
+   return loadFile(configFilename)
+}
+
+// Saves passed data to config file
+function saveConfig(data) {
+   saveFile(data, configFilename);
+}
 
 // Loads file.
 // Returns empty object if file doesn't exist
-function loadFile(filename = 'config.js') {
+function loadFile(filename = configFilename) {
    const filePath = path + filename;
 
    try {
@@ -57,12 +68,13 @@ function saveFile(data, filename) {
 
          // Temporary file removed
       })
+      console.log('Saved the file ', filePath);
    });
-
-   console.log('Saved the file ', filePath);
 }
 
 module.exports = {
+   loadConfig,
+   saveConfig,
    loadFile,
    saveFile,
 }
