@@ -26,7 +26,7 @@ app.use(express.static('public'));
 const io = socket(server);
 
 atemManager.init(io);
-simulateAtemSwitcher.init(io);
+// simulateAtemSwitcher.init(io);
 
 const jsonPath = {
    config: 'config.json',

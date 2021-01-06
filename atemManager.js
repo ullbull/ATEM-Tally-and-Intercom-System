@@ -16,34 +16,44 @@ console.log('state', atemSwitcher.state);
 
 setTimeout(atemSwitcher.connect, 4000);
 
-atemSwitcher.on('connectionStateChange', function (state) {
-   console.log('state', state);
-});
-
-atemSwitcher.on('connectionLost', function () {
-   console.log("Connection Lost!")
-});
-
-atemSwitcher.on('error', function (e) {
-   console.log(e)
-});
 
 function init(io) {
    io.on('connection', function (socket) {
       // Send to client
       socket.emit('ATEM', getProgPrev());
-
+      
       socket.on('ATEM get status', () => {
          socket.emit('ATEM', getProgPrev());
       })
    });
 
+   atemSwitcher.on('connectionStateChange', function (state) {
+      console.log('state', state);
+      io.emit('message', 'Atem switcher state: ' + state.description);
+   });
+   
+   atemSwitcher.on('connectionLost', function () {
+      console.log("Connection Lost!")
+      io.emit('message', 'Connection to Atem switcher lost!');
+   });
+   
+   atemSwitcher.on('error', function (e) {
+      console.log(e)
+      io.emit('message', 'Atem switcher error: ' + e);
+   });
+
    atemSwitcher.on('previewBus', previewBus => {
-      io.emit('previewBus', previewBus);
+      setPreview(previewBus);
+
+      // Send to all clients
+      io.emit('ATEM', getProgPrev());
    });
 
    atemSwitcher.on('programBus', programBus => {
-      io.emit('programBus', programBus);
+      setProgram(programBus);
+
+      // Send to all clients
+      io.emit('ATEM', getProgPrev());
    });
 }
 
@@ -84,11 +94,5 @@ function setPreview(preview) {
 
 module.exports = {
    init,
-   atemSwitcher,
-   setProgram,
-   setPreview,
-   getProgPrev,
-   getProgram,
-   getPreview,
    reconnect
 }

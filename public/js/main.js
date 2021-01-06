@@ -31,7 +31,7 @@ window.onkeydown = event => {
 }
 
 window.onkeyup = event => {
-   simulateAtemControl.keyUp(event);
+   // simulateAtemControl.keyUp(event);
 
    console.log(`${event.key} up`);
    console.log('event', event);

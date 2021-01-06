@@ -132,13 +132,13 @@ body {
 }
 
 .my-audio {
-   filter: 
-   /* sepia(20%) */
-   /* grayscale(1) */
-   /* saturate(70%) */
-   brightness(70%)
-   /* contrast(100%) */
-   /* invert(12%); */
+   filter:
+      /* sepia(20%) */
+      /* grayscale(1) */
+      /* saturate(70%) */
+      brightness(70%)
+      /* contrast(100%) */
+      /* invert(12%); */
 }
 
 .program {
@@ -159,10 +159,23 @@ body {
    width: 80%;
    border: 3px solid #828496;
    padding: 10px;
- }
+}
 
- .settings-container {
+.settings-container {
    padding: 20px;
    flex: 1;
    position: relative;
+}
+
+#atem-switcher-state {
+   margin-top: 10px;
+   margin-bottom: 0px;
+}
+
+.tally-for {
+   display: inline-block;
+   margin-top: 0px;
+   margin-bottom: 0px;
+   font-size: 20px;
+   width:fit-content;
 }

@@ -20,15 +20,16 @@ if (camera >= minCamId && camera <= maxCamId) {
 }
 
 function addCameraDiv() {
-   const container = document.getElementById("main-container");
-   const div = document.createElement("div");
-   const text = document.createElement("p");
-   // div.setAttribute("class", "select-camera");
-   // text.setAttribute("class", "select-camera");
-   text.setAttribute("id", "camera-id");
-   text.innerHTML = `Cam: ${camera}`;
-   div.appendChild(text);
-   container.insertBefore(div, container.firstChild);
+   // const container = document.getElementById("main-container");
+   const div = document.getElementById("tally-div");
+   // const div = document.createElement("div");
+   const camID = document.createElement("p");
+   // div.setAttribute("class", "tally-for");
+   camID.setAttribute("class", "tally-for");
+   camID.setAttribute("id", "camera-id");
+   camID.innerHTML = camera;
+   div.appendChild(camID);
+   // container.insertBefore(div, container.firstChild);
 }
 
 function getCameraId() {
