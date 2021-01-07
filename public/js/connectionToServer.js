@@ -1,5 +1,6 @@
 import * as users from './users.js';
 import * as atemManager from './atemManager.js';
+import * as sourceManager from './sourceManager.js';
 
 const programElement = document.getElementById('program')
 
@@ -15,6 +16,10 @@ socket.on('message', (message) => {
 
 socket.on("connected clients", clientIDs => {
    users.updateUserList(clientIDs, socket.id);
+});
+
+socket.on('connection', config => {
+   sourceManager.addSources(config.sources);
 });
 
 socket.on('ATEM', ({ program, preview }, cam_config) => {

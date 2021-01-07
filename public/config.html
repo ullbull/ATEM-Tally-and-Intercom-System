@@ -24,15 +24,31 @@
       <div class="content-container">
          <div class="settings-container" id="main-container">
             <form action="/save.config">
-               <label for="fname">IP address:</label>
-               <input id="atem-ip-input" type="text" id="atem-ip" name="atem-ip"><br>
-               <input type="submit" value="Save">
+               <label>IP address:</label>
+               <input id="atem-ip" class="inputs" type="text" name="atem-ip"><br>
+               <br>
+               <label>HDMI 1:</label>
+               <input id="atem-hdmi1" class="inputs" type="text" name="atem-hdmi1"><br>
+               <label>HDMI 2:</label>
+               <input id="atem-hdmi2" class="inputs" type="text" name="atem-hdmi2"><br>
+               <label>HDMI 3:</label>
+               <input id="atem-hdmi3" class="inputs" type="text" name="atem-hdmi3"><br>
+               <label>HDMI 4:</label>
+               <input id="atem-hdmi4" class="inputs" type="text" name="atem-hdmi4"><br>
+               <label>SDI 1:</label>
+               <input id="atem-sdi1" class="inputs" type="text" name="atem-sdi1"><br>
+               <label>SDI 2:</label>
+               <input id="atem-sdi2" class="inputs" type="text" name="atem-sdi2"><br>
+               <label>SDI 3:</label>
+               <input id="atem-sdi3" class="inputs" type="text" name="atem-sdi3"><br>
+               <label>SDI 4:</label>
+               <input id="atem-sdi4" class="inputs" type="text" name="atem-sdi4"><br>
+               <br>
+               <input id="save" class="settings-container" type="submit" value="Save">
             </form>
          </div>
       </div>
    </div>
-   <b>chrome://flags/#unsafely-treat-insecure-origin-as-secure</b>
-
    <script src="/socket.io/socket.io.js"></script>
    <script type="module" src="./js/config.js"></script>
 </body>

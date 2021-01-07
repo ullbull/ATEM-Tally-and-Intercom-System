@@ -75,11 +75,11 @@ io.on('connection', function (socket) {
 
 ////////////////////
 
-app.get('/select-cam', (request, response) => {
-   // Get desired camID
-   const camID = request.query.cam
-   response.redirect(`/?cam=${camID}`);
-});
+// app.get('/select-cam', (request, response) => {
+//    // Get desired camID
+//    const camID = request.query.cam
+//    response.redirect(`/?cam=${camID}`);
+// });
 
 app.get('/get-config', (request, response) => {
    const config = fileManager.loadFile('atem-config.json');
@@ -92,6 +92,16 @@ app.get('/save.config', (request, response) => {
 
    const config = fileManager.loadConfig();
    config.ip = data['atem-ip'];
+   config.sources.source1 = data['atem-hdmi1'];
+   config.sources.source2 = data['atem-hdmi2'];
+   config.sources.source3 = data['atem-hdmi3'];
+   config.sources.source4 = data['atem-hdmi4'];
+   config.sources.source5 = data['atem-sdi1'];
+   config.sources.source6 = data['atem-sdi2'];
+   config.sources.source7 = data['atem-sdi3'];
+   config.sources.source8 = data['atem-sdi4'];
+
+   console.log('saving config ', config);
 
    fileManager.saveConfig(config);
 

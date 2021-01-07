@@ -2,6 +2,7 @@ var Atem = require('atem') // Load the atem module
 const fileManager = require('./fileManager.js');
 
 const defaultIp = '192.168.1.225'
+
 let config = fileManager.loadConfig();
 
 const atemSwitcher = new Atem()
@@ -20,9 +21,12 @@ setTimeout(atemSwitcher.connect, 4000);
 function init(io) {
    // When a new client connects
    io.on('connection', function (socket) {
-   
-   // Send connection state to client
-   socket.emit('connectionStateChange', atemSwitcher.state);
+
+      // Send config to client
+      socket.emit('connection', config);
+
+      // Send connection state to client
+      socket.emit('connectionStateChange', atemSwitcher.state);
 
       if (atemSwitcher.state === Atem.ConnectionState.open) {
          // Send to client
@@ -85,7 +89,10 @@ function sendProgPrevTo(socket) {
 function reconnect(ip) {
    atemSwitcher.disconnect();
    atemSwitcher.ip = ip;
+
+   // Reload config file
    config = fileManager.loadConfig();
+
    console.log(`Connecting atem at ${atemSwitcher.ip}`);
    atemSwitcher.connect();
 }

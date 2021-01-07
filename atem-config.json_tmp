@@ -1,3 +1,13 @@
 {
-  "ip": "192.168.1.25"
+  "ip": "192.168.1.25",
+  "sources": {
+    "source1": "?",
+    "source2": "ppt",
+    "source3": "cg",
+    "source4": "?",
+    "source5": "cam1",
+    "source6": "cam2",
+    "source7": "cam3",
+    "source8": "?"
+  }
 }

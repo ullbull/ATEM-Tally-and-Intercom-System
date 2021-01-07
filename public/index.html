@@ -42,18 +42,21 @@
             </div>
             <br>
             <div id="tally-div" class="tally-for">
-               <p id="tally-for" class="tally-for">Tally for cam </p>
+               <p id="tally-for" class="tally-for">Tally for </p>
             </div>
-            <div class="center" id="select-camera-div">
-               <p class="select-camera">Select camera</p>
-               <div class="select-camera">
-                  <form action="/select-cam">
-                     <input class="select-camera" id="camera-id" type="number" id="camera-select" name="cam"
-                        value="1" min="1" max="20" style="width: 2em" onfocus="this.select();">
-                     <input class="select-camera" id="submit-button" type="submit" value="Select">
-                  </form>
+            <div id="select-source">
+
+               <div class="dropdown">
+                  <button class="dropbtn">Select source</button>
+                  <div id="dropdown-content" class="dropdown-content">
+                     <a href="?source=cam1">cam1</a>
+                     <a href="?source=cam2">cam2</a>
+                     <a href="?source=cam3">cam3</a>
+                  </div>
                </div>
+
             </div>
+
             <h3>Hold Shift key or tap screen to talk</h3>
             <button id="toggle-talk">Mic is off</button>
             <h1 id="program" class="program"></h1>
