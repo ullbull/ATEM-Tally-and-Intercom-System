@@ -18,18 +18,32 @@ setTimeout(atemSwitcher.connect, 4000);
 
 
 function init(io) {
+   // When a new client connects
    io.on('connection', function (socket) {
-      // Send to client
-      socket.emit('ATEM', getProgPrev());
 
-      socket.on('ATEM get status', () => {
+      if (atemSwitcher.state === Atem.ConnectionState.open) {
+         // Send to client
          socket.emit('ATEM', getProgPrev());
-      })
+      }
    });
 
    atemSwitcher.on('connectionStateChange', state => {
       console.log('state', state);
       io.emit('connectionStateChange', state);
+
+      // When atem switcher is connected
+      if (atemSwitcher.state === Atem.ConnectionState.open) {
+         // Get program and preview from switcher
+         const program = 0;
+         const preview = 0;
+
+         // Save program and preview
+         setProgram(program);
+         setPreview(preview);
+
+         // Send program and preview to all clients
+         io.emit('ATEM', getProgPrev());
+      }
    });
 
    atemSwitcher.on('connectionLost', () => {
