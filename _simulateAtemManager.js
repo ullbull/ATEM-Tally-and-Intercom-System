@@ -24,7 +24,6 @@ function setPreview(preview) {
    Preview = preview;
 }
 
-
 module.exports = {
    setProgram,
    setPreview,
