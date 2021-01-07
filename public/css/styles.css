@@ -7,14 +7,6 @@ body {
    background-color: #f9fafc;
    /* background-color: #c6d5f1; */
    color: #1f1c1d;
-
-
-   -webkit-touch-callout: none;
-   -webkit-user-select: none;
-   -khtml-user-select: none;
-   -moz-user-select: none;
-   -ms-user-select: none;
-   user-select: none;
 }
 
 .ppt {
@@ -54,6 +46,14 @@ body {
    display: flex;
    justify-content: space-between;
    overflow: hidden;
+
+   /* Disable select text */
+   -webkit-touch-callout: none;
+   -webkit-user-select: none;
+   -khtml-user-select: none;
+   -moz-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
 }
 
 
@@ -178,5 +178,5 @@ body {
    margin-top: 0px;
    margin-bottom: 0px;
    font-size: 20px;
-   width:fit-content;
+   width: fit-content;
 }
