@@ -17,7 +17,9 @@ socket.on("connected clients", clientIDs => {
    users.updateUserList(clientIDs, socket.id);
 });
 
-socket.on('ATEM', ({ program, preview }) => {
+socket.on('ATEM', ({ program, preview }, cam_config) => {
+   program = cam_config['source'+program];
+   preview = cam_config['source'+preview];
    console.log('ATEM program:', program);
    console.log('ATEM preview:', preview);
    programElement.innerHTML = program;

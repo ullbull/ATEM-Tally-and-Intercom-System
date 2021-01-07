@@ -1,3 +1,13 @@
 {
-  "ip": "192.168.1.25"
+  "ip": "192.168.1.25",
+  "cam_config": {
+      "source1": "?",
+      "source2": "cg",
+      "source3": "ppt",
+      "source4": "?",
+      "source5": "cam 1",
+      "source6": "cam 2",
+      "source7": "cam 3",
+      "source8": "?"
+   }
 }

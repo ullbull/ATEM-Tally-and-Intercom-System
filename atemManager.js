@@ -2,6 +2,7 @@ var Atem = require('atem') // Load the atem module
 const fileManager = require('./fileManager.js');
 
 const defaultIp = '192.168.1.225'
+let config = fileManager.loadConfig();
 
 const atemSwitcher = new Atem()
 
@@ -20,10 +21,13 @@ setTimeout(atemSwitcher.connect, 4000);
 function init(io) {
    // When a new client connects
    io.on('connection', function (socket) {
+   
+   // Send connection state to client
+   socket.emit('connectionStateChange', atemSwitcher.state);
 
       if (atemSwitcher.state === Atem.ConnectionState.open) {
          // Send to client
-         socket.emit('ATEM', getProgPrev());
+         socket.emit('ATEM', getProgPrev(), config.cam_config);
       }
    });
 
@@ -42,7 +46,7 @@ function init(io) {
          setPreview(preview);
 
          // Send program and preview to all clients
-         io.emit('ATEM', getProgPrev());
+         io.emit('ATEM', getProgPrev(), config.cam_config);
       }
    });
 
@@ -56,42 +60,77 @@ function init(io) {
       io.emit('message', 'Atem switcher error: ' + e);
    });
 
-   atemSwitcher.on('sourceTally', (source, state) => {
-      console.log('incoming sourceTally event');
-      console.log('source:', source);
-      console.log('state:', state);
+/*   
+   atemSwitcher.on('inputTally', (source, state) => {
+			console.log(`inputTally source info ${source}: `, Atem.getSourceInfo(source));
+	if (source > 0 && source <= 8) {
+	      console.log('incoming inputTally event');
+	      console.log('source:', source);
+	      console.log('state:', state);
+		
+	      if (state.program) {
+		 setProgram(source);
+	      }
+	      if (state.preview) {
+		 setPreview(source);
+	      }
 
-      if (state.program) {
-         setProgram(source);
-      }
-      if (state.preview) {
-         setPreview(source);
-      }
+	      // Send to all clients
+	      io.emit('ATEM', getProgPrev());
+	}
+   })
+// */
+/*
+   atemSwitcher.on('sourceTally', (source, state) => {
+			console.log(`source info ${source}: `, Atem.getSourceInfo(source));
+
+	if (source > 0 && source <= 8) {
+		if (state.program || state.preview) {
+		      console.log('incoming sourceTally event');
+		      console.log('source:', source);
+		      console.log('state:', state);
+			
+		      if (state.program) {
+			 setProgram(source);
+		      }
+		      if (state.preview) {
+			 setPreview(source);
+		      }
+
+		      // Send to all clients
+		      io.emit('ATEM', getProgPrev());
+		}
+	}
+   })
+// */
+// /*
+
+   atemSwitcher.on('previewBus', source => {
+// console.log('atemSwitcher:', atemSwitcher);
+      console.log('incoming previewBus event');
+      console.log('source:', source);
+      setPreview(source);
 
       // Send to all clients
-      io.emit('ATEM', getProgPrev());
-   })
+      io.emit('ATEM', getProgPrev(), config.cam_config);
+   });
 
-   // atemSwitcher.on('previewBus', previewBus => {
-   //    setPreview(previewBus);
+   atemSwitcher.on('programBus', source => {
+      console.log('incoming programBus event');
+      console.log('source:', source);
+      setProgram(source);
 
-   //    // Send to all clients
-   //    io.emit('ATEM', getProgPrev());
-   // });
-
-   // atemSwitcher.on('programBus', programBus => {
-   //    setProgram(programBus);
-
-   //    // Send to all clients
-   //    io.emit('ATEM', getProgPrev());
-   // });
-
+      // Send to all clients
+      io.emit('ATEM', getProgPrev(), config.cam_config);
+   });
+// */
 
 }
 
 function reconnect(ip) {
    atemSwitcher.disconnect();
    atemSwitcher.ip = ip;
+   config = fileManager.loadConfig();
    console.log(`Connecting atem at ${atemSwitcher.ip}`);
    atemSwitcher.connect();
 }

@@ -14,6 +14,9 @@ if (camera >= minCamId && camera <= maxCamId) {
    // Remove select-camera-div
    document.getElementById('select-camera-div').remove();
 
+   // Set camera to string
+   camera = 'cam ' + camera;
+
    addCameraDiv();
 } else {
    console.log('no camera', camera);
