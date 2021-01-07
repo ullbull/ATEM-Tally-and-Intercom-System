@@ -7,7 +7,7 @@ let config = fileManager.loadConfig();
 const atemSwitcher = new Atem()
 
 // Get saved ip address
-atemSwitcher.ip = fileManager.loadConfig().ip || defaultIp;
+atemSwitcher.ip = config.ip || defaultIp;
 
 // Connect Atem switcher
 console.log(`Connecting atem at ${atemSwitcher.ip}`);
@@ -16,7 +16,6 @@ atemSwitcher.connect()
 console.log('state', atemSwitcher.state);
 
 setTimeout(atemSwitcher.connect, 4000);
-
 
 function init(io) {
    // When a new client connects
@@ -27,7 +26,7 @@ function init(io) {
 
       if (atemSwitcher.state === Atem.ConnectionState.open) {
          // Send to client
-         socket.emit('ATEM', getProgPrev(), config.cam_config);
+         sendProgPrevTo(socket);
       }
    });
 
@@ -42,11 +41,11 @@ function init(io) {
          const preview = 0;
 
          // Save program and preview
-         setProgram(program);
-         setPreview(preview);
+         storeProgram(program);
+         storePreview(preview);
 
          // Send program and preview to all clients
-         io.emit('ATEM', getProgPrev(), config.cam_config);
+         sendProgPrevTo(io);
       }
    });
 
@@ -60,71 +59,27 @@ function init(io) {
       io.emit('message', 'Atem switcher error: ' + e);
    });
 
-/*   
-   atemSwitcher.on('inputTally', (source, state) => {
-			console.log(`inputTally source info ${source}: `, Atem.getSourceInfo(source));
-	if (source > 0 && source <= 8) {
-	      console.log('incoming inputTally event');
-	      console.log('source:', source);
-	      console.log('state:', state);
-		
-	      if (state.program) {
-		 setProgram(source);
-	      }
-	      if (state.preview) {
-		 setPreview(source);
-	      }
-
-	      // Send to all clients
-	      io.emit('ATEM', getProgPrev());
-	}
-   })
-// */
-/*
-   atemSwitcher.on('sourceTally', (source, state) => {
-			console.log(`source info ${source}: `, Atem.getSourceInfo(source));
-
-	if (source > 0 && source <= 8) {
-		if (state.program || state.preview) {
-		      console.log('incoming sourceTally event');
-		      console.log('source:', source);
-		      console.log('state:', state);
-			
-		      if (state.program) {
-			 setProgram(source);
-		      }
-		      if (state.preview) {
-			 setPreview(source);
-		      }
-
-		      // Send to all clients
-		      io.emit('ATEM', getProgPrev());
-		}
-	}
-   })
-// */
-// /*
-
    atemSwitcher.on('previewBus', source => {
-// console.log('atemSwitcher:', atemSwitcher);
       console.log('incoming previewBus event');
       console.log('source:', source);
-      setPreview(source);
+      storePreview(source);
 
       // Send to all clients
-      io.emit('ATEM', getProgPrev(), config.cam_config);
+      sendProgPrevTo(io);
    });
 
    atemSwitcher.on('programBus', source => {
       console.log('incoming programBus event');
       console.log('source:', source);
-      setProgram(source);
+      storeProgram(source);
 
       // Send to all clients
-      io.emit('ATEM', getProgPrev(), config.cam_config);
+      sendProgPrevTo(io);
    });
-// */
+}
 
+function sendProgPrevTo(socket) {
+   socket.emit('ATEM', getProgPrev(), config.sources);
 }
 
 function reconnect(ip) {
@@ -155,11 +110,11 @@ function getProgPrev() {
    }
 }
 
-function setProgram(program) {
+function storeProgram(program) {
    Program = program;
 }
 
-function setPreview(preview) {
+function storePreview(preview) {
    Preview = preview;
 }
 
