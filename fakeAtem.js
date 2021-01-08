@@ -16,7 +16,6 @@ function Device() {
    events.EventEmitter.call(this);
 
    this.connect = function () {
-
       atem.state = ConnectionState.attempting;
       // atem.emit('connectionStateChange', state);
 
