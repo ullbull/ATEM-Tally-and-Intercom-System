@@ -1,5 +1,5 @@
 import * as users from './users.js';
-import * as atemManager from './atemManager.js';
+import * as tally from './tally.js';
 import * as sourceManager from './sourceManager.js';
 import * as elementHider from './elementHider.js';
 
@@ -20,14 +20,7 @@ socket.on("connected clients", clientIDs => {
 });
 
 socket.on('connection', () => {
-   // Prompt user to choose source if source is not set
-   if (!sourceManager.getMySource()) {
-      sourceManager.promptUserForSource();
-   } else {
-      // Source is already set.
-      // Hide prompt element
-      elementHider.hideElement("prompt");
-   }
+   console.log('socket connected ', socket.id);
 });
 
 socket.on('ATEM', ({ program, preview }, sources) => {
@@ -49,11 +42,11 @@ socket.on('ATEM', ({ program, preview }, sources) => {
    // Show tally status
    const mySource = sourceManager.getMySource();
    if (mySource == program) {
-      atemManager.camOnProgram();
+      tally.camOnProgram();
    } else if ( mySource == preview) {
-      atemManager.camOnPreview();
+      tally.camOnPreview();
    } else {
-      atemManager.camFree();
+      tally.camFree();
    }
 });
 

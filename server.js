@@ -104,16 +104,6 @@ app.get('/save.config', (request, response) => {
       }
    }
 
-   // config.ip = data['ip'];
-   // config.sources['HDMI 1'] = data['HDMI 1'];
-   // config.sources['HDMI 2'] = data['HDMI 2'];
-   // config.sources['HDMI 3'] = data['HDMI 3'];
-   // config.sources['HDMI 4'] = data['HDMI 4'];
-   // config.sources['SDI 1'] = data['SDI 1'];
-   // config.sources['SDI 2'] = data['SDI 2'];
-   // config.sources['SDI 3'] = data['SDI 3'];
-   // config.sources['SDI 4'] = data['SDI 4'];
-
    console.log('saving config ', config);
 
    fileManager.saveConfig(config);

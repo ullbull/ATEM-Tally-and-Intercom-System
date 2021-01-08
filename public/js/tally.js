@@ -1,4 +1,3 @@
-import * as sourceManager from './sourceManager.js';
 
 const bgColor = document.body.style.backgroundColor;
 const programColor = 'rgb(197, 68, 68)';

@@ -1,10 +1,13 @@
 import * as talk from './talk.js';
 import { connection } from './connection.js';
 import * as simulateAtemControl from './simulateAtemControl.js';
-import * as elementHider from './elementHider.js';
+import * as sourceManager from './sourceManager.js';
 
 const roomId = 'apa';
 const toggleTalk = document.getElementById('toggle-talk')
+
+sourceManager.getSource();
+
 
 // Open or join room
 connection.openOrJoin(roomId);
