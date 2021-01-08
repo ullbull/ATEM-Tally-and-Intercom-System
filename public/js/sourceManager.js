@@ -54,9 +54,8 @@ function addDropdownContent(sources) {
       if (Object.hasOwnProperty.call(sources, key)) {
          const source = sources[key];
          const element = document.createElement("a");
-         // element.setAttribute("id", source);
          element.href = '?source=' + source;
-         element.innerHTML = source;
+         element.innerHTML = key + ': ' + source;
          div.appendChild(element);
       }
    }

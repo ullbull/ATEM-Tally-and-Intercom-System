@@ -92,15 +92,27 @@ app.get('/save.config', (request, response) => {
    console.log('Receiving config data!', data);
 
    const config = fileManager.loadConfig();
-   config.ip = data['atem-ip'];
-   config.sources.source1 = data['atem-hdmi1'];
-   config.sources.source2 = data['atem-hdmi2'];
-   config.sources.source3 = data['atem-hdmi3'];
-   config.sources.source4 = data['atem-hdmi4'];
-   config.sources.source5 = data['atem-sdi1'];
-   config.sources.source6 = data['atem-sdi2'];
-   config.sources.source7 = data['atem-sdi3'];
-   config.sources.source8 = data['atem-sdi4'];
+
+   for (const key in data) {
+      if (Object.hasOwnProperty.call(data, key)) {
+         const value = data[key];
+         if (key == 'ip') {
+            config[key] = value;
+         } else {
+            config.sources[key] = value;
+         }
+      }
+   }
+
+   // config.ip = data['ip'];
+   // config.sources['HDMI 1'] = data['HDMI 1'];
+   // config.sources['HDMI 2'] = data['HDMI 2'];
+   // config.sources['HDMI 3'] = data['HDMI 3'];
+   // config.sources['HDMI 4'] = data['HDMI 4'];
+   // config.sources['SDI 1'] = data['SDI 1'];
+   // config.sources['SDI 2'] = data['SDI 2'];
+   // config.sources['SDI 3'] = data['SDI 3'];
+   // config.sources['SDI 4'] = data['SDI 4'];
 
    console.log('saving config ', config);
 

@@ -36,14 +36,14 @@ function init(io) {
    });
 
    atemSwitcher.on('connectionStateChange', state => {
-      console.log('state', state);
+      console.log('connection state changed to: ', state.description);
       io.emit('connectionStateChange', state);
 
       // When atem switcher is connected
       if (atemSwitcher.state === Atem.ConnectionState.open) {
          // Get program and preview from switcher
-         const program = 0;
-         const preview = 0;
+         let program;
+         let preview;
 
          // Save program and preview
          storeProgram(program);
@@ -100,8 +100,8 @@ function reconnect(ip) {
 
 ///////////////////////////////////////
 
-let Program = 0;
-let Preview = 0;
+let Program;
+let Preview;
 
 function getProgram() {
    return Program;

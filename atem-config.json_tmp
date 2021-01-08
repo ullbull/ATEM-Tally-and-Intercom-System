@@ -1,13 +1,13 @@
 {
   "ip": "192.168.1.25",
   "sources": {
-    "source1": "?",
-    "source2": "ppt",
-    "source3": "cg",
-    "source4": "?",
-    "source5": "cam1",
-    "source6": "cam2",
-    "source7": "cam3",
-    "source8": "?"
+    "HDMI 1": "",
+    "HDMI 2": "ppt",
+    "HDMI 3": "cg",
+    "HDMI 4": "",
+    "SDI 1": "cam1",
+    "SDI 2": "cam2",
+    "SDI 3": "cam3",
+    "SDI 4": ""
   }
 }

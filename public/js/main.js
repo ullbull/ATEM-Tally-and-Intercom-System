@@ -35,8 +35,6 @@ window.onkeydown = event => {
 window.onkeyup = event => {
    // simulateAtemControl.keyUp(event);
 
-   elementHider.toggleHide("main-container");
-
    console.log(`${event.key} up`);
    console.log('event', event);
 

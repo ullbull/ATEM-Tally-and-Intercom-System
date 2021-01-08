@@ -30,12 +30,23 @@ socket.on('connection', () => {
    }
 });
 
-socket.on('ATEM', ({ program, preview }, cam_config) => {
-   program = cam_config['source'+program];
-   preview = cam_config['source'+preview];
+socket.on('ATEM', ({ program, preview }, sources) => {
+
+   if(!program || !preview || !sources) {
+      console.error('This should not happen!', {program, preview, sources})
+      return;
+   }
+
+   // Get program and preview sources
+   program = sources['source'+program];
+   preview = sources['source'+preview];
+
    console.log('ATEM program:', program);
    console.log('ATEM preview:', preview);
+   
    programElement.innerHTML = program;
+   
+   // Show tally status
    const mySource = sourceManager.getMySource();
    if (mySource == program) {
       atemManager.camOnProgram();
@@ -47,6 +58,7 @@ socket.on('ATEM', ({ program, preview }, cam_config) => {
 });
 
 socket.on('connectionStateChange', state => {
+   console.log('Atem connection state changed to: ', state.description);
    const stateElement = document.getElementById("atem-switcher-state");
    stateElement.innerHTML = state.description;
 })
