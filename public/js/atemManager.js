@@ -4,10 +4,6 @@ const bgColor = document.body.style.backgroundColor;
 const programColor = 'rgb(197, 68, 68)';
 const previewColor = 'rgb(71, 194, 97)';
 
-function getCameraId() {
-   return source;
-}
-
 function camOnProgram() {
    changeColorTo(programColor);
 }
@@ -31,7 +27,6 @@ function changeColorTo(color) {
 }
 
 export {
-   getCameraId,
    camOnProgram,
    camOnPreview,
    camFree

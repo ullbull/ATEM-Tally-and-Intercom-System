@@ -1,6 +1,7 @@
 import * as users from './users.js';
 import * as atemManager from './atemManager.js';
 import * as sourceManager from './sourceManager.js';
+import * as elementHider from './elementHider.js';
 
 const programElement = document.getElementById('program')
 
@@ -18,8 +19,15 @@ socket.on("connected clients", clientIDs => {
    users.updateUserList(clientIDs, socket.id);
 });
 
-socket.on('connection', config => {
-   sourceManager.addSources(config.sources);
+socket.on('connection', () => {
+   // Prompt user to choose source if source is not set
+   if (!sourceManager.getMySource()) {
+      sourceManager.promptUserForSource();
+   } else {
+      // Source is already set.
+      // Hide prompt element
+      elementHider.hideElement("prompt");
+   }
 });
 
 socket.on('ATEM', ({ program, preview }, cam_config) => {
@@ -28,10 +36,10 @@ socket.on('ATEM', ({ program, preview }, cam_config) => {
    console.log('ATEM program:', program);
    console.log('ATEM preview:', preview);
    programElement.innerHTML = program;
-   const camID = atemManager.getCameraId();
-   if (camID == program) {
+   const mySource = sourceManager.getMySource();
+   if (mySource == program) {
       atemManager.camOnProgram();
-   } else if ( camID == preview) {
+   } else if ( mySource == preview) {
       atemManager.camOnPreview();
    } else {
       atemManager.camFree();

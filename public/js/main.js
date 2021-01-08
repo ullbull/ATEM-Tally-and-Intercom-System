@@ -1,6 +1,7 @@
 import * as talk from './talk.js';
 import { connection } from './connection.js';
 import * as simulateAtemControl from './simulateAtemControl.js';
+import * as elementHider from './elementHider.js';
 
 const roomId = 'apa';
 const toggleTalk = document.getElementById('toggle-talk')
@@ -30,8 +31,11 @@ window.onkeydown = event => {
    }
 }
 
+
 window.onkeyup = event => {
    // simulateAtemControl.keyUp(event);
+
+   elementHider.toggleHide("main-container");
 
    console.log(`${event.key} up`);
    console.log('event', event);

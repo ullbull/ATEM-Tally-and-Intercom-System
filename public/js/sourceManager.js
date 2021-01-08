@@ -1,24 +1,40 @@
+import * as elementHider from './elementHider.js';
+import * as api from './api.js';
 
-fetch('/get-config')
-   .then(response => response.json())
-   .then(config => {
+let MySource;
 
-      // Set this camera
-      const urlParams = new URLSearchParams(window.location.search);
-      let source = urlParams.get('source');
+// Set mySource from url
+const urlParams = new URLSearchParams(window.location.search);
+let source = urlParams.get('source');
+if (source) {
+   setMySource(source);
+}
 
-      // Validate source
-      if (validateSource(source, config.sources)) {
-         // Source is valid!
+async function promptUserForSource() {
+   // Get config
+   const config = await api.get('/get-config');
 
-         // Remove select-source
-         document.getElementById('select-source').remove();
+   addDropdownContent(config.sources);
 
-         displaySelectedSource(source);
-      } else {
-         console.log('No selected source', source);
-      }
-   });
+   // Show prompt element
+   elementHider.unhideElement("prompt");
+}
+
+async function setMySource(source) {
+   // Get config
+   const config = await api.get('/get-config');
+
+   // Validate source
+   if (!validateSource(source, config.sources)) {
+      console.error(`The source ${source} is not valid!`);
+      return;
+   }
+
+   MySource = source;
+
+   const tallyDiv = document.getElementById("tally-div");
+   tallyDiv.innerHTML = `Tally for ${MySource}`;
+}
 
 function validateSource(source, sources) {
    for (const key in sources) {
@@ -32,10 +48,8 @@ function validateSource(source, sources) {
    return false;
 }
 
-function addSources(sources) {
-   console.log('add sources', sources);
+function addDropdownContent(sources) {
    const div = document.getElementById("dropdown-content")
-   console.log('div', div);
    for (const key in sources) {
       if (Object.hasOwnProperty.call(sources, key)) {
          const source = sources[key];
@@ -48,19 +62,11 @@ function addSources(sources) {
    }
 }
 
-function displaySelectedSource(source) {
-   // const container = document.getElementById("main-container");
-   const div = document.getElementById("tally-div");
-   // const div = document.createElement("div");
-   const camID = document.createElement("p");
-   // div.setAttribute("class", "tally-for");
-   camID.setAttribute("class", "tally-for");
-   camID.setAttribute("id", "camera-id");
-   camID.innerHTML = source;
-   div.appendChild(camID);
-   // container.insertBefore(div, container.firstChild);
+function getMySource() {
+   return MySource;
 }
 
 export {
-   addSources,
+   getMySource,
+   promptUserForSource,
 }

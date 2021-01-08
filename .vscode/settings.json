@@ -3,6 +3,7 @@
    "ASGI",
    "asyncio",
    "getsizeof",
+   "unhide",
    "userid"
 ],
   "python.pythonPath": "environment\\Scripts\\python.exe"

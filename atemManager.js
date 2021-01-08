@@ -1,4 +1,5 @@
-var Atem = require('atem') // Load the atem module
+// const Atem = require('atem')
+const Atem = require('./fakeAtem.js')
 const fileManager = require('./fileManager.js');
 
 const defaultIp = '192.168.1.225'
@@ -22,8 +23,8 @@ function init(io) {
    // When a new client connects
    io.on('connection', function (socket) {
 
-      // Send config to client
-      socket.emit('connection', config);
+      // Let client know that it is connected
+      socket.emit('connection');
 
       // Send connection state to client
       socket.emit('connectionStateChange', atemSwitcher.state);

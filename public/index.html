@@ -35,25 +35,27 @@
          </div>
       </header>
       <div class="content-container">
-         <div class="audio-chat-container" id="main-container">
+         <div id="main-container" class="audio-chat-container">
             <div id="atem-switcher-state-div" class="atem-switcher-state">
                <p class="atem-switcher-state">Switcher state: </p>
                <p id="atem-switcher-state" class="atem-switcher-state">Not connected!</p>
             </div>
             <br>
             <div id="tally-div" class="tally-for">
-               <p id="tally-for" class="tally-for">Tally for </p>
+               <p id="tally-for" class="tally-for">No selected source!</p>
             </div>
             <div id="select-source">
 
-               <div class="dropdown">
+               <div id="prompt" class="dropdown">
                   <button class="dropbtn">Select source</button>
                   <div id="dropdown-content" class="dropdown-content">
-                     <a href="?source=cam1">cam1</a>
+                     <!-- <a href="?source=cam1">cam1</a>
                      <a href="?source=cam2">cam2</a>
-                     <a href="?source=cam3">cam3</a>
+                     <a href="?source=cam3">cam3</a> -->
                   </div>
                </div>
+               <template>
+               </template>
 
             </div>
 
