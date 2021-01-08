@@ -1,7 +1,11 @@
 import * as elementHider from './elementHider.js';
 import * as api from './api.js';
 
+let MySource;
+
 async function getSource() {
+   console.log('getSource()');
+
    // Set mySource from url
    const urlParams = new URLSearchParams(window.location.search);
    const source = urlParams.get('source');
@@ -15,8 +19,14 @@ async function getSource() {
       // Hide prompt element
       elementHider.hideElement("prompt");
 
+      MySource = source;
+
       displayMySource(source);
    }
+}
+
+function getMySource() {
+   return MySource;
 }
 
 async function promptUserForSource() {
@@ -29,7 +39,7 @@ async function promptUserForSource() {
    elementHider.unhideElement("prompt");
 }
 
-async function displayMySource(source) {
+function displayMySource(source) {
    const tallyDiv = document.getElementById("tally-div");
    tallyDiv.innerHTML = `Tally for ${source}`;
 }
@@ -68,4 +78,5 @@ function setDropdownContent(sources) {
 
 export {
    getSource,
+   getMySource
 }

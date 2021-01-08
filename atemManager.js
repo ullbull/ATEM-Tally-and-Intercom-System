@@ -1,4 +1,5 @@
 // const Atem = require('atem')
+const simulateAtemSwitcher = require('./simulateAtemSwitcher.js');
 const Atem = require('./fakeAtem.js')
 const fileManager = require('./fileManager.js');
 
@@ -20,6 +21,8 @@ console.log('state', atemSwitcher.state);
 setTimeout(atemSwitcher.connect, 4000);
 
 function init(io) {
+   simulateAtemSwitcher.init(io, atemSwitcher);
+
    // When a new client connects
    io.on('connection', function (socket) {
 
@@ -84,6 +87,8 @@ function init(io) {
 }
 
 function sendProgPrevTo(socket) {
+   const progPrev = getProgPrev();
+   console.log('sending:', progPrev);
    socket.emit('ATEM', getProgPrev(), config.sources);
 }
 
