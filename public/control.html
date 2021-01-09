@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+   <title>Control ATEM Switcher</title>
+
+   <link rel="stylesheet" href="./css/styles.css" />
+</head>
+
+<body>
+   <script src="./socket.io/socket.io.js"></script>
+
+   <div class="container" id="container">
+      <header class="header">
+         <div class="logo-container">
+            <h1 class="logo-text">
+               Control ATEM Switcher
+            </h1>
+         </div>
+      </header>
+      <div class="content-container">
+         <div class="settings-container" id="main-container">
+            <div id="atem-switcher-state-div" class="atem-switcher-state">
+               <p class="atem-switcher-state">Switcher state: </p>
+               <p id="atem-switcher-state" class="atem-switcher-state">Not connected!</p>
+            </div>
+            <button id="button-1">1</button>
+            <button id="button-2">2</button>
+            <button id="button-3">3</button>
+            <button id="button-4">4</button>
+            <button id="button-5">5</button>
+            <button id="button-6">6</button>
+            <button id="button-7">7</button>
+            <button id="button-8">8</button>
+            <button id="button-cut">cut</button>
+
+            <h1 id="program" class="program"></h1>
+
+         </div>
+      </div>
+   </div>
+   <script src="/socket.io/socket.io.js"></script>
+   <script type="module" src="./js/control.js"></script>
+</body>
+
+</html>
