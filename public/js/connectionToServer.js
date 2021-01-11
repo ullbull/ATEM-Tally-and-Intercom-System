@@ -4,6 +4,7 @@ import * as sourceManager from './sourceManager.js';
 import * as elementHider from './elementHider.js';
 
 const programElement = document.getElementById('program')
+const previewElement = document.getElementById('preview')
 
 const socket = io();
 
@@ -60,6 +61,7 @@ socket.on('ATEM', ({ program, preview }, sources) => {
    console.log('ATEM preview:', preview);
    
    programElement.innerHTML = program;
+   previewElement.innerHTML = preview;
    
    // Show tally status
    const mySource = sourceManager.getMySource();

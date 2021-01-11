@@ -1,7 +1,7 @@
 import * as talk from './talk.js';
 import { connection } from './connection.js';
 import * as sourceManager from './sourceManager.js';
-import * as simulateAtemControl from './simulateAtemControl.js';
+import * as cts from './connectionToServer.js';
 
 const roomId = 'apa';
 const toggleTalk = document.getElementById('toggle-talk')
@@ -24,7 +24,6 @@ connection.openOrJoin(roomId);
 // }, 100);
 
 window.onkeydown = event => {
-   // simulateAtemControl.keyUp(event);
 
    if (event.shiftKey) {
       talk.unmute();
