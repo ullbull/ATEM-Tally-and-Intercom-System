@@ -1,7 +1,7 @@
 import { connection } from './connection.js';
 
 const bgColor = document.body.style.backgroundColor;
-const pptColor = 'rgb(131, 131, 131)';
+const pptColor = 'rgb(197, 68, 68)';
 const toggleTalk = document.getElementById('toggle-talk')
 let isMuted = true;
 

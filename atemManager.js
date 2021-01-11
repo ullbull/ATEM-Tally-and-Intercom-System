@@ -1,5 +1,5 @@
-// const Atem = require('atem')
 const Atem = require('./fakeAtem.js')
+// const Atem = require('atem')
 const simulateAtemSwitcher = require('./simulateAtemSwitcher.js');
 const fileManager = require('./fileManager.js');
 
@@ -11,8 +11,6 @@ const atemSwitcher = new Atem()
 
 // Get saved ip address
 atemSwitcher.ip = config.ip || defaultIp;
-
-
 
 // Connect Atem switcher
 console.log(`Connecting atem at ${atemSwitcher.ip}`);

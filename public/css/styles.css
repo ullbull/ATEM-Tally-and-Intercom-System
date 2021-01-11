@@ -152,6 +152,11 @@ a {
       /* invert(12%); */
 }
 
+.preview {
+   margin: 0px;
+   /* font-size: 20px; */
+}
+
 .program {
    margin: 0px;
    font-size: 120px;
