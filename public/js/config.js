@@ -35,10 +35,15 @@ async function fillForm() {
          sourcesForm.appendChild(input);
          sourcesForm.appendChild(br);
       }
-
    }
+   
    // Create submit button
    const submitButton = document.createElement('input');
-   setAttributes(submitButton, { id: "save", class: "settings-container", type: "submit", value: "Save" });
+   setAttributes(submitButton, {
+      id: "save",
+      class: "settings-container",
+      type: "submit",
+      value: "Save"
+   });
    sourcesForm.appendChild(submitButton);
 }

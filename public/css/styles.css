@@ -9,6 +9,16 @@ body {
    color: #1f1c1d;
 }
 
+a {
+   height: 30px;
+   margin: 10px 0 0 0;
+   padding-left: 30px;
+   padding-right: 10px;
+   padding-bottom: 10px;
+   font-weight: 500;
+   font-size: 18px;
+}
+
 .ppt {
    padding: 32px 32px;
 }
@@ -166,6 +176,15 @@ body {
    position: relative;
    /* right: 10%; */
    text-align: right;
+   margin: top 10px;
+   font-size: 30px;
+   padding: 20px;
+   flex: 1;
+}
+
+.control-container {
+   position: relative;
+   /* right: 10%; */
    margin: top 10px;
    font-size: 30px;
    padding: 20px;
