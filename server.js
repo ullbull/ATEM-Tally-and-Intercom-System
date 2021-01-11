@@ -1,9 +1,8 @@
-const simulateAtemSwitcher = require('./simulateAtemSwitcher.js');
 const express = require('express');
 const socket = require('socket.io');
 const RTCMultiConnectionServer = require('rtcmulticonnection-server');
-// const fs = require('fs');
-// const https = require('https');
+const fs = require('fs');
+const https = require('https');
 const fileManager = require('./fileManager.js');
 const atemManager = require('./atemManager.js');
 
@@ -11,15 +10,15 @@ const port = 5000;
 const app = express();
 
 
-// var privateKey = fs.readFileSync('fake_keys/111.111.1.59-key.pem');
-// var certificate = fs.readFileSync('fake_keys/111.111.1.59.pem');
+var privateKey = fs.readFileSync('fake_keys/111.111.1.59-key.pem');
+var certificate = fs.readFileSync('fake_keys/111.111.1.59.pem');
 
-// const server = https.createServer({
-//     key: privateKey,
-//     cert: certificate
-// }, app).listen(port);
+const server = https.createServer({
+    key: privateKey,
+    cert: certificate
+}, app).listen(port);
 
-const server = app.listen(port);
+// const server = app.listen(port);
 
 // Host public files
 app.use(express.static('public'));
@@ -27,7 +26,6 @@ app.use(express.static('public'));
 const io = socket(server);
 
 atemManager.init(io);
-// simulateAtemSwitcher.init(io);
 
 const jsonPath = {
    config: 'config.json',
