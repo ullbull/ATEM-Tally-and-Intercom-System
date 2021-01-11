@@ -1,6 +1,6 @@
 // const Atem = require('atem')
-const simulateAtemSwitcher = require('./simulateAtemSwitcher.js');
 const Atem = require('./fakeAtem.js')
+const simulateAtemSwitcher = require('./simulateAtemSwitcher.js');
 const fileManager = require('./fileManager.js');
 
 const defaultIp = '192.168.1.225'
@@ -11,6 +11,8 @@ const atemSwitcher = new Atem()
 
 // Get saved ip address
 atemSwitcher.ip = config.ip || defaultIp;
+
+
 
 // Connect Atem switcher
 console.log(`Connecting atem at ${atemSwitcher.ip}`);
@@ -36,6 +38,17 @@ function init(io) {
          // Send to client
          sendProgPrevTo(socket);
       }
+
+      socket.on('setPreview', sourceID => {
+         console.log('incoming setPreview', sourceID);
+         atemSwitcher.setPreview(sourceID);
+      })
+
+      socket.on('cut', () => {
+         console.log('incoming cut');
+         atemSwitcher.cut();
+      })
+
    });
 
    atemSwitcher.on('connectionStateChange', state => {
@@ -56,6 +69,7 @@ function init(io) {
          sendProgPrevTo(io);
       }
    });
+
 
    atemSwitcher.on('connectionLost', () => {
       console.log("Connection Lost!")

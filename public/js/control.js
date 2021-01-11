@@ -1,5 +1,7 @@
 import * as api from './api.js';
-import * as simulateAtemControl from './simulateAtemControl.js';
+import * as atemControl from './atemControl.js';
+import * as cts from './connectionToServer.js';
+
 
 async function buttons() {
    const config = await api.getConfig();
@@ -33,41 +35,52 @@ async function buttons() {
 
    const which = 48;
 
-
    document.getElementById('HDMI 1').onclick = () => {
-      simulateAtemControl.keyUp({ which: which + 1 });
+      cts.sendData('setPreview', 1);
    }
    document.getElementById('HDMI 2').onclick = () => {
-      simulateAtemControl.keyUp({ which: which + 2 });
+      cts.sendData('setPreview', 2);
    }
    document.getElementById('HDMI 3').onclick = () => {
-      simulateAtemControl.keyUp({ which: which + 3 });
+      cts.sendData('setPreview', 3);
    }
    document.getElementById('HDMI 4').onclick = () => {
-      simulateAtemControl.keyUp({ which: which + 4 });
+      cts.sendData('setPreview', 4);
    }
    document.getElementById('SDI 1').onclick = () => {
-      simulateAtemControl.keyUp({ which: which + 5 });
+      cts.sendData('setPreview', 5);
    }
    document.getElementById('SDI 2').onclick = () => {
-      simulateAtemControl.keyUp({ which: which + 6 });
+      cts.sendData('setPreview', 6);
    }
    document.getElementById('SDI 3').onclick = () => {
-      simulateAtemControl.keyUp({ which: which + 7 });
+      cts.sendData('setPreview', 7);
    }
    document.getElementById('SDI 4').onclick = () => {
-      simulateAtemControl.keyUp({ which: which + 8 });
+      cts.sendData('setPreview', 8);
    }
 
    document.getElementById('button-cut').onclick = () => {
-      simulateAtemControl.keyUp({ code: 'Enter' });
+      cts.sendData('cut');
    }
+
+
+   // document.getElementById('HDMI 1').onclick = cts.sendData('setPreview', 1);
+   // document.getElementById('HDMI 2').onclick = cts.sendData('setPreview', 2);
+   // document.getElementById('HDMI 3').onclick = cts.sendData('setPreview', 3);
+   // document.getElementById('HDMI 4').onclick = cts.sendData('setPreview', 4);
+   // document.getElementById('SDI 1').onclick = cts.sendData('setPreview', 5);
+   // document.getElementById('SDI 2').onclick = cts.sendData('setPreview', 6);
+   // document.getElementById('SDI 3').onclick = cts.sendData('setPreview', 7);
+   // document.getElementById('SDI 4').onclick = cts.sendData('setPreview', 8);
+
+   // document.getElementById('button-cut').onclick = cts.sendData('cut');
 }
 
 buttons();
 
 window.onkeyup = event => {
-   simulateAtemControl.keyUp(event);
+   atemControl.keyUp(event);
 
    console.log(`${event.key} up`);
    console.log('event', event);
