@@ -2,13 +2,17 @@
 function hideElement(elementID) {
    console.log('hiding ', elementID);
    const element = document.getElementById(elementID);
-   element.style.display = "none";
+   if (element) {
+      element.style.display = "none";
+   }
 }
 
 function unhideElement(elementID) {
    console.log('unhide ', elementID);
    const element = document.getElementById(elementID);
-   element.style.display = "block";
+   if (element) {
+      element.style.display = "block";
+   }
 }
 
 function toggleHide(elementID) {
