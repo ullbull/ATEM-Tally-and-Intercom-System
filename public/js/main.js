@@ -21,17 +21,6 @@ connection.onMediaError = function(error) {
    document.getElementById('error').append(b);
 }
 
-///////////////////////////////////////////////////////
-
-// Mute my stream
-// setTimeout(function () {
-//    // const myStream = connection.streamEvents.selectFirst({
-//    //    local: true
-//    // }).stream;
-//    // myStream.mute('both');
-//    talk.mute(connection);
-// }, 100);
-
 window.onkeydown = event => {
 
    if (event.shiftKey) {
@@ -43,7 +32,6 @@ window.onkeydown = event => {
       console.log('ctrlkey down')
    }
 }
-
 
 window.onkeyup = event => {
 
