@@ -9,6 +9,26 @@ const ConnectionState = {
    open: { description: 'connected' }
 };
 
+function interpretSource(sourceID, sources) {
+   if (sourceID == 1) {
+      return sources['HDMI 1'];
+   } else if (sourceID == 2) {
+      return sources['HDMI 2'];
+   } else if (sourceID == 3) {
+      return sources['HDMI 3'];
+   } else if (sourceID == 4) {
+      return sources['HDMI 4'];
+   } else if (sourceID == 5) {
+      return sources['SDI 1'];
+   } else if (sourceID == 6) {
+      return sources['SDI 2'];
+   } else if (sourceID == 7) {
+      return sources['SDI 3'];
+   } else if (sourceID == 8) {
+      return sources['SDI 4'];
+   }
+}
+
 const programElement = document.getElementById('program')
 const previewElement = document.getElementById('preview')
 
@@ -30,26 +50,6 @@ socket.on('connection', () => {
    console.log('socket connected ', socket.id);
 });
 
-function temporaryFunction(num, sources) {
-   if (num == 1) {
-      return sources['HDMI 1'];
-   } else if (num == 2) {
-      return sources['HDMI 2'];
-   } else if (num == 3) {
-      return sources['HDMI 3'];
-   } else if (num == 4) {
-      return sources['HDMI 4'];
-   } else if (num == 5) {
-      return sources['SDI 1'];
-   } else if (num == 6) {
-      return sources['SDI 2'];
-   } else if (num == 7) {
-      return sources['SDI 3'];
-   } else if (num == 8) {
-      return sources['SDI 4'];
-   }
-}
-
 socket.on('ATEM', ({ program, preview }, sources) => {
    console.log('I got this: ', {program, preview, sources})
 
@@ -58,9 +58,9 @@ socket.on('ATEM', ({ program, preview }, sources) => {
       // return;
    }
 
-   // Get program and preview sources
-   program = temporaryFunction(program, sources);
-   preview = temporaryFunction(preview, sources);
+   // Interpret program and preview sources
+   program = interpretSource(program, sources);
+   preview = interpretSource(preview, sources);
 
    console.log('ATEM program:', program);
    console.log('ATEM preview:', preview);

@@ -14,6 +14,13 @@ connection.openOrJoin(roomId);
 
 handleConnection.handleConnection();
 
+connection.onMediaError = function(error) {
+   console.error('Media Error: ', error);
+   const b = document.createElement('b');
+   b.innerHTML = error;
+   document.getElementById('error').append(b);
+}
+
 ///////////////////////////////////////////////////////
 
 // Mute my stream

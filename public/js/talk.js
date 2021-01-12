@@ -53,7 +53,7 @@ function mute() {
       console.log('muted');
 
       connection.extra.isMuted = isMuted;
-      // connection.updateExtraData();
+      connection.updateExtraData();
 
       // Change background color
       // document.body.style.backgroundColor = bgColor;
