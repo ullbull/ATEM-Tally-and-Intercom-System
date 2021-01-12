@@ -13,12 +13,12 @@ const app = express();
 var privateKey = fs.readFileSync('fake_keys/111.111.1.59-key.pem');
 var certificate = fs.readFileSync('fake_keys/111.111.1.59.pem');
 
-// const server = https.createServer({
-//     key: privateKey,
-//     cert: certificate
-// }, app).listen(port);
+const server = https.createServer({
+    key: privateKey,
+    cert: certificate
+}, app).listen(port);
 
-const server = app.listen(port);
+// const server = app.listen(port);
 
 console.log(`Server running at ${server.address().address}:${port}`);
 console.log(ip.getIp());
