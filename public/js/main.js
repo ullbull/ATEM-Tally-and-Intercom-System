@@ -2,15 +2,17 @@ import * as talk from './talk.js';
 import { connection } from './connection.js';
 import * as sourceManager from './sourceManager.js';
 import * as cts from './connectionToServer.js';
+import * as handleConnection from './handleConnection.js';
 
 const roomId = 'apa';
 const toggleTalk = document.getElementById('toggle-talk')
 
 sourceManager.getSource();
 
-
 // Open or join room
 connection.openOrJoin(roomId);
+
+handleConnection.handleConnection();
 
 ///////////////////////////////////////////////////////
 

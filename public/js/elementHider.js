@@ -6,7 +6,7 @@ function hideElement(elementID) {
 }
 
 function unhideElement(elementID) {
-   console.log('un hiding ', elementID);
+   console.log('unhide ', elementID);
    const element = document.getElementById(elementID);
    element.style.display = "block";
 }

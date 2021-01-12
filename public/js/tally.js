@@ -1,7 +1,9 @@
+import * as elementHider from './elementHider.js';
 
 const bgColor = document.body.style.backgroundColor;
 const programColor = 'rgb(197, 68, 68)';
 const previewColor = 'rgb(71, 194, 97)';
+const noConnectionColor = 'rgb(194, 194, 194)';
 
 function camOnProgram() {
    changeColorTo(programColor);
@@ -13,6 +15,26 @@ function camOnPreview() {
 
 function camFree() {
    changeColorTo(bgColor);
+}
+
+const switcherState = document.getElementById("atem-switcher-state")
+const fontSize = switcherState.style.fontSize;
+function switcherNotConnected() {
+   changeColorTo(noConnectionColor);
+   elementHider.hideElement('tally-div');
+   elementHider.hideElement('program');
+   elementHider.hideElement('preview');
+
+   switcherState.style.fontSize = '25px';
+}
+
+function switcherConnected() {
+   changeColorTo(bgColor);
+   elementHider.unhideElement('tally-div');
+   elementHider.unhideElement('program');
+   elementHider.unhideElement('preview');
+
+   switcherState.style.fontSize = fontSize;
 }
 
 function changeColorTo(color) {
@@ -28,5 +50,7 @@ function changeColorTo(color) {
 export {
    camOnProgram,
    camOnPreview,
-   camFree
+   camFree,
+   switcherNotConnected,
+   switcherConnected
 }

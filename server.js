@@ -111,3 +111,7 @@ app.get('/save.config', (request, response) => {
 
    response.redirect(`/`);
 });
+
+app.get('/test', (request, response) => {
+   response.json({message: 'Hello!'});
+})

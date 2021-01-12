@@ -1,7 +1,13 @@
 import * as users from './users.js';
 import * as tally from './tally.js';
 import * as sourceManager from './sourceManager.js';
-import * as elementHider from './elementHider.js';
+
+const ConnectionState = {
+   closed: { description: 'Not connected' },
+   attempting: { description: 'Attempting to connect' },
+   establishing: { description: 'Establishing connection' },
+   open: { description: 'connected' }
+};
 
 const programElement = document.getElementById('program')
 const previewElement = document.getElementById('preview')
@@ -49,11 +55,10 @@ socket.on('ATEM', ({ program, preview }, sources) => {
 
    if(!program || !preview || !sources) {
       console.error('This should not happen!', {program, preview, sources})
-      return;
+      // return;
    }
 
    // Get program and preview sources
-
    program = temporaryFunction(program, sources);
    preview = temporaryFunction(preview, sources);
 
@@ -78,6 +83,12 @@ socket.on('connectionStateChange', state => {
    console.log('Atem connection state changed to: ', state.description);
    const stateElement = document.getElementById("atem-switcher-state");
    stateElement.innerHTML = state.description;
+
+   if (state.description == ConnectionState.open.description) {
+      tally.switcherConnected();
+   } else {
+      tally.switcherNotConnected();
+   }
 })
 
 socket.on('disconnect client', clientId => {

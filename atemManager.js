@@ -1,5 +1,5 @@
-// const Atem = require('./fakeAtem.js')
-const Atem = require('atem')
+const Atem = require('./fakeAtem.js')
+// const Atem = require('atem')
 const simulateAtemSwitcher = require('./simulateAtemSwitcher.js');
 const fileManager = require('./fileManager.js');
 

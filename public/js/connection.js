@@ -1,5 +1,3 @@
-import * as talk from './talk.js';
-
 function getElement(mediaElement, config) {
    console.log('!½!!!!!', mediaElement);
    config = config || {};
