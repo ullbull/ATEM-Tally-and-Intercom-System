@@ -5,6 +5,7 @@ const fs = require('fs');
 const https = require('https');
 const fileManager = require('./fileManager.js');
 const atemManager = require('./atemManager.js');
+const ip = require('./ip.js');
 
 const port = 5000;
 const app = express();
@@ -12,12 +13,15 @@ const app = express();
 var privateKey = fs.readFileSync('fake_keys/111.111.1.59-key.pem');
 var certificate = fs.readFileSync('fake_keys/111.111.1.59.pem');
 
-const server = https.createServer({
-    key: privateKey,
-    cert: certificate
-}, app).listen(port);
+// const server = https.createServer({
+//     key: privateKey,
+//     cert: certificate
+// }, app).listen(port);
 
-// const server = app.listen(port);
+const server = app.listen(port);
+
+console.log(`Server running at ${server.address().address}:${port}`);
+console.log(ip.getIp());
 
 // Host public files
 app.use(express.static('public'));
@@ -109,5 +113,5 @@ app.get('/save.config', (request, response) => {
 });
 
 app.get('/test', (request, response) => {
-   response.json({message: 'Hello!'});
+   response.json({ message: 'Hello!' });
 })
