@@ -11,7 +11,7 @@ const micOn = urlParams.get('mic-on');
 
 if(micOn) {
    console.log('mic is on', micOn);
-   setTimeout(unmute, 1000);
+   setTimeout(unmute, 5000);
 }
 
 function unmute() {
