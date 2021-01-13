@@ -78,7 +78,7 @@ connection.iceServers = [{
 
 connection.audiosContainer = document.getElementById('audios-container');
 connection.onstream = function (event) {
-   // console.log('incoming stream', event);
+   console.log('incoming stream', event);
 
    const mediaElement = getElement(event.mediaElement, { title: event.userid, myId: connection.userid });
 
