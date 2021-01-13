@@ -5,6 +5,15 @@ const pptColor = 'rgb(197, 68, 68)';
 const toggleTalk = document.getElementById('toggle-talk')
 let isMuted = true;
 
+// Set mic on of
+const urlParams = new URLSearchParams(window.location.search);
+const micOn = urlParams.get('mic-on');
+
+if(micOn) {
+   console.log('mic is on', micOn);
+   setTimeout(unmute, 1000);
+}
+
 function unmute() {
    if (!connection.streamEvents.selectFirst({ local: true })) {
       return;
@@ -16,11 +25,11 @@ function unmute() {
    // const thisStreamEvent = connection.streamEvents[firstLocalStream.id];
 
    if (isMuted) {
-      
+
       firstLocalStream.unmute('both');
       isMuted = false;
       console.log('unmuted');
-      
+
       connection.extra.isMuted = isMuted;
       connection.updateExtraData();
 
