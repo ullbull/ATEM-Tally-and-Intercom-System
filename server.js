@@ -6,6 +6,8 @@ const https = require('https');
 const fileManager = require('./fileManager.js');
 const atemManager = require('./atemManager.js');
 const ip = require('./ip.js');
+const startBrowser = require('./startBrowser.js');
+
 
 const port = 5000;
 const app = express();
@@ -14,8 +16,8 @@ var privateKey = fs.readFileSync('fake_keys/111.111.1.59-key.pem');
 var certificate = fs.readFileSync('fake_keys/111.111.1.59.pem');
 
 const server = https.createServer({
-    key: privateKey,
-    cert: certificate
+   key: privateKey,
+   cert: certificate
 }, app).listen(port);
 
 // const server = app.listen(port);
@@ -48,6 +50,8 @@ function getClientIDs() {
    })
    return clientIDs;
 }
+
+startBrowser.startBrowser();
 
 io.on('connection', function (socket) {
    RTCMultiConnectionServer.addSocket(socket, config);
