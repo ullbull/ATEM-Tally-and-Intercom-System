@@ -15,11 +15,6 @@ function runCommand(command) {
 }
 
 function startBrowser() {
-   // Restart ALSA
-   runCommand("sudo /etc/init.d/alsa-utils stop");
-   runCommand("sudo alsactl kill rescan");
-   runCommand("sudo /etc/init.d/alsa-utils start");
-
    // Open webpage
    runCommand("chromium-browser --kiosk https://localhost:5000/?mic-on=1");
 }

@@ -21,11 +21,6 @@ const server = https.createServer({
 
 // const server = app.listen(port);
 
-setTimeout(() => {
-   startBrowser.startBrowser();
-}, 3000);
-
-
 console.log(`Server running at ${server.address().address}:${port}`);
 console.log(ip.getIp());
 
