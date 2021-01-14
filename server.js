@@ -8,7 +8,6 @@ const atemManager = require('./atemManager.js');
 const ip = require('./ip.js');
 const startBrowser = require('./startBrowser.js');
 
-
 const port = 5000;
 const app = express();
 
@@ -21,6 +20,11 @@ const server = https.createServer({
 }, app).listen(port);
 
 // const server = app.listen(port);
+
+setTimeout(() => {
+   startBrowser.startBrowser();
+}, 3000);
+
 
 console.log(`Server running at ${server.address().address}:${port}`);
 console.log(ip.getIp());
@@ -50,8 +54,6 @@ function getClientIDs() {
    })
    return clientIDs;
 }
-
-startBrowser.startBrowser();
 
 io.on('connection', function (socket) {
    RTCMultiConnectionServer.addSocket(socket, config);

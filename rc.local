@@ -1,0 +1,6 @@
+#!/bin/sh -e
+
+cd ~/ATEM-Tally-and-Intercom-System/
+node server.js
+
+exit 0
