@@ -14,6 +14,7 @@ if(micOn) {
    setTimeout(unmute, 5000);
 }
 
+
 function unmute() {
    if (!connection.streamEvents.selectFirst({ local: true })) {
       return;
