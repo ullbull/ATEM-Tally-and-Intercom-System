@@ -4,7 +4,7 @@ import { connection } from './connection.js';
 
 let Connected = false;
 
-function setConnected(connected) {
+function setConnected(connected, message = 'Connection lost!') {
    if (connected == Connected) {
       return;
    }
@@ -17,6 +17,7 @@ function setConnected(connected) {
    }
    else {
       console.error(`Not connected! `, error);
+      document.getElementById('connection-lost').innerHTML = message
       elementHider.unhideElement('connection-lost');
    }
 }

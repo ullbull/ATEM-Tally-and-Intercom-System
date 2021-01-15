@@ -28,6 +28,7 @@ console.log(ip.getIp());
 app.use(express.static('public'));
 
 const io = socket(server);
+const srvSockets = io.sockets.sockets;
 
 atemManager.init(io);
 
@@ -42,7 +43,6 @@ var config = getValuesFromConfigJson(jsonPath);
 
 function getClientIDs() {
    const clientIDs = [];
-   const srvSockets = io.sockets.sockets;
    srvSockets.forEach(function (value, key) {
       clientIDs.push(key);
       // console.log(key + ' = ' + value)
@@ -51,7 +51,7 @@ function getClientIDs() {
 }
 
 function printClients() {
-   const n = io.sockets.sockets.size;
+   const n = srvSockets.size;
    const s = (n > 1) ? 's' : '';
    console.log(`${n} client${s} connected.`);
    console.log(getClientIDs());
@@ -69,6 +69,10 @@ io.on('connection', function (socket) {
 
    // Send to all clients
    io.emit('connected clients', getClientIDs());
+
+   socket.on('reload', () => {
+      io.emit('reload');
+   })
 
    // Runs when client disconnects
    socket.on('disconnect', () => {

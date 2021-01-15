@@ -44,8 +44,10 @@ window.ontouchend = event => {
 toggleTalk.onclick = event => {
    if (talk.getMyStream().isMuted) {
       talk.unmuteMyStream();
+      // location.href='?mic-on=1';
    }
    else {
       talk.muteMyStream();
+      // location.href='/';
    }
 }

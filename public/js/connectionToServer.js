@@ -46,19 +46,32 @@ socket.on('message', (message) => {
 
 socket.on("connected clients", clientIDs => {
    users.updateUserList(clientIDs, socket.id);
+
+   // Reload page if number of clients and streams don't match
+   setTimeout(() => {
+      const numberOfStreams = connection.streamEvents.selectAll().length;
+      if (clientIDs.length > numberOfStreams) {
+         socket.emit('reload');
+      }
+   }, 1000);
 });
 
 socket.on('connection', () => {
+   handleConnection.setConnected(true);
    console.log('socket connected ', socket.id);
    tally.switcherConnected();
-   handleConnection.setConnected(true);
+   document.getElementById('my-id').innerHTML = socket.id;
 });
 
-socket.on('ATEM', ({ program, preview }, sources) => {
-   console.log('I got this: ', {program, preview, sources})
+socket.on('reload', () => {
+   location.reload();
+})
 
-   if(!program || !preview || !sources) {
-      console.error('This should not happen!', {program, preview, sources})
+socket.on('ATEM', ({ program, preview }, sources) => {
+   console.log('I got this: ', { program, preview, sources })
+
+   if (!program || !preview || !sources) {
+      console.error('This should not happen!', { program, preview, sources })
       // return;
    }
 
@@ -68,15 +81,15 @@ socket.on('ATEM', ({ program, preview }, sources) => {
 
    console.log('ATEM program:', program);
    console.log('ATEM preview:', preview);
-   
+
    programElement.innerHTML = program;
    previewElement.innerHTML = preview;
-   
+
    // Show tally status
    const mySource = sourceManager.getMySource();
    if (mySource == program) {
       tally.camOnProgram();
-   } else if ( mySource == preview) {
+   } else if (mySource == preview) {
       tally.camOnPreview();
    } else {
       tally.camFree();
