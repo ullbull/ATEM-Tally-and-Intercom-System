@@ -50,13 +50,19 @@ function getClientIDs() {
    return clientIDs;
 }
 
+function printClients() {
+   const n = io.sockets.sockets.size;
+   const s = (n > 1) ? 's' : '';
+   console.log(`${n} client${s} connected.`);
+   console.log(getClientIDs());
+}
+
 io.on('connection', function (socket) {
    RTCMultiConnectionServer.addSocket(socket, config);
 
-   const srvSockets = io.sockets.sockets;
    console.log('Client connected ', socket.id);
-   console.log('Connected clients: ', srvSockets.size);
-   console.log('clients: ', getClientIDs());
+
+   printClients();
 
    // Send to client
    socket.emit('message', 'You are connected!');
@@ -67,6 +73,8 @@ io.on('connection', function (socket) {
    // Runs when client disconnects
    socket.on('disconnect', () => {
       console.log('Disconnecting client', socket.id)
+      printClients();
+
       // Send to all clients
       io.emit('disconnect client', socket.id);
       io.emit('connected clients', getClientIDs());

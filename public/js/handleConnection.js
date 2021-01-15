@@ -1,38 +1,51 @@
-import * as connection from './connection.js';
+import * as tally from './tally.js';
 import * as elementHider from './elementHider.js';
+import { connection } from './connection.js';
 
 let Connected = false;
 
 function setConnected(connected) {
+   if (connected == Connected) {
+      return;
+   }
+
    Connected = connected;
+
+   if (connected === true) {
+      console.log('Connected to server!');
+      elementHider.hideElement('connection-lost');
+   }
+   else {
+      console.error(`Not connected! `, error);
+      elementHider.unhideElement('connection-lost');
+   }
 }
 
-function getConnected() {
-   return Connected;
-}
+// function getConnected() {
+//    return Connected;
+// }
 
-async function handleConnection() {
+// On my phone it took a very long time to receive the error if not connected. That's why I had to do this a bit more complicated
+async function checkConnection(interval) {
    setInterval(() => {
+      let gotResponse = false;
       fetch('/')
          .then(response => {
-            if(getConnected() === false) {
-               console.log('Connected to server!');
-               setConnected(true);
-               elementHider.hideElement('connection-lost');
-            }
+            gotResponse = true;
          })
          .catch(error => {
-            if (getConnected() === true) {   
-               console.error(`Not connected! `, error);
-               setConnected(false);
-               elementHider.unhideElement('connection-lost');
-            }
+            setConnected(false);
          })
-   }, 1000);
+
+      setTimeout(() => {
+         setConnected(gotResponse);
+      }, interval/2);
+
+   }, interval);
 }
 
 export {
    setConnected,
-   getConnected,
-   handleConnection
+   // getConnected,
+   checkConnection
 }

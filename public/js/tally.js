@@ -19,7 +19,10 @@ function camFree() {
 
 const switcherState = document.getElementById("atem-switcher-state")
 const fontSize = switcherState.style.fontSize;
+
 function switcherNotConnected() {
+   console.log('switcherNotConnected')
+
    changeColorTo(noConnectionColor);
    elementHider.hideElement('tally-div');
    elementHider.hideElement('program');

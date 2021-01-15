@@ -89,7 +89,7 @@ connection.onstream = function (event) {
 
    connection.audiosContainer.appendChild(mediaElement);
 
-   // Mute stream
+   // Mute stream if it's supposed to be muted
    if (event.extra.isMuted) {
       // mediaElement.media.pause();
       event.stream.mute('both');

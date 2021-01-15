@@ -1,6 +1,8 @@
 import * as users from './users.js';
 import * as tally from './tally.js';
 import * as sourceManager from './sourceManager.js';
+import { connection } from './connection.js';
+import * as handleConnection from './handleConnection.js';
 
 const ConnectionState = {
    closed: { description: 'Not connected' },
@@ -32,7 +34,7 @@ function interpretSource(sourceID, sources) {
 const programElement = document.getElementById('program')
 const previewElement = document.getElementById('preview')
 
-const socket = io();
+const socket = connection.getSocket();
 
 function sendData(type, payload) {
    socket.emit(type, payload);
@@ -48,6 +50,8 @@ socket.on("connected clients", clientIDs => {
 
 socket.on('connection', () => {
    console.log('socket connected ', socket.id);
+   tally.switcherConnected();
+   handleConnection.setConnected(true);
 });
 
 socket.on('ATEM', ({ program, preview }, sources) => {
@@ -94,6 +98,17 @@ socket.on('connectionStateChange', state => {
 socket.on('disconnect client', clientId => {
    console.log('client disconnected:', clientId);
 });
+
+socket.on('disconnect', event => {
+   console.log('socket disconnected:', event);
+
+   const stateElement = document.getElementById("atem-switcher-state");
+   stateElement.innerHTML = 'Connection lost';
+
+   tally.switcherNotConnected();
+   handleConnection.setConnected(false);
+});
+
 
 export {
    sendData

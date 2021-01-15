@@ -12,7 +12,7 @@ sourceManager.getSource();
 // Open or join room
 connection.openOrJoin(roomId);
 
-handleConnection.handleConnection();
+// handleConnection.checkConnection(3000);
 
 connection.onMediaError = function (error) {
    console.error('Media Error: ', error);
@@ -22,40 +22,30 @@ connection.onMediaError = function (error) {
 }
 
 window.onkeydown = event => {
-
    if (event.shiftKey) {
-      talk.unmute();
-      // connection.extra.isMuted = talk.isMuted;
-   }
-
-   if (event.ctrlKey) {
-      console.log('ctrlkey down')
+      talk.unmuteMyStream();
    }
 }
 
 window.onkeyup = event => {
-
-   console.log(`${event.key} up`);
-   console.log('event', event);
-
    if (event.key == 'Shift') {
-      talk.mute();
+      talk.muteMyStream();
    }
 }
 
 window.ontouchstart = event => {
-   talk.unmute();
+   talk.unmuteMyStream();
 }
 
 window.ontouchend = event => {
-   talk.mute();
+   talk.muteMyStream();
 }
 
 toggleTalk.onclick = event => {
-   if (talk.isMuted) {
-      talk.unmute();
+   if (talk.getMyStream().isMuted) {
+      talk.unmuteMyStream();
    }
    else {
-      talk.mute();
+      talk.muteMyStream();
    }
 }
