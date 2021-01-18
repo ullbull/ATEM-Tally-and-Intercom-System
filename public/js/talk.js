@@ -82,6 +82,37 @@ function muteMyStream() {
    }
 }
 
+window.onkeydown = event => {
+   if (event.shiftKey) {
+      unmuteMyStream();
+   }
+}
+
+window.onkeyup = event => {
+   if (event.key == 'Shift') {
+      muteMyStream();
+   }
+}
+
+window.ontouchstart = event => {
+   unmuteMyStream();
+}
+
+window.ontouchend = event => {
+   muteMyStream();
+}
+
+toggleTalk.onclick = event => {
+   if (getMyStream().isMuted) {
+      unmuteMyStream();
+      // location.href='?mic-on=1';
+   }
+   else {
+      muteMyStream();
+      // location.href='/';
+   }
+}
+
 export {
    getMyStream,
    muteMyStream,
