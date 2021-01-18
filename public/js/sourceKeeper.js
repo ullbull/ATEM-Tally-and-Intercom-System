@@ -3,7 +3,7 @@ import * as api from './api.js';
 
 let MySource;
 
-async function getSource() {
+async function setSource() {
    console.log('getSource()');
 
    // Set mySource from url
@@ -77,6 +77,6 @@ function setDropdownContent(sources) {
 }
 
 export {
-   getSource,
+   setSource,
    getMySource
 }

@@ -3,8 +3,6 @@ import * as api from './api.js';
 import * as atemControl from './atemControl.js';
 import * as cts from './connectionToServer.js';
 
-cts.connect();
-
 async function buttons() {
    const config = await api.getConfig();
    const sourcesForm = document.getElementById('buttons');
