@@ -56,13 +56,13 @@ socket.on('connection', () => {
    tally.switcherConnected();
    document.getElementById('my-id').innerHTML = socket.id;
 
-   // Reload page if number of clients and streams don't match
-   setTimeout(() => {
-      const numberOfStreams = connection.streamEvents.selectAll().length;
-      if (ClientIDs.length > numberOfStreams) {
-         socket.emit('reload');
-      }
-   }, 5000);
+   // // Reload page if number of clients and streams don't match
+   // setTimeout(() => {
+   //    const numberOfStreams = connection.streamEvents.selectAll().length;
+   //    if (ClientIDs.length > numberOfStreams) {
+   //       socket.emit('reload');
+   //    }
+   // }, 5000);
 });
 
 socket.on('reload', () => {
