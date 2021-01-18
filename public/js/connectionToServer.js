@@ -54,7 +54,10 @@ socket.on('connection', () => {
    handleConnection.setConnected(true);
    console.log('socket connected ', socket.id);
    tally.switcherConnected();
-   document.getElementById('my-id').innerHTML = socket.id;
+   const element = document.getElementById('my-id')
+   if (element) {
+      element.innerHTML = socket.id;
+   }
 
    // // Reload page if number of clients and streams don't match
    // setTimeout(() => {
