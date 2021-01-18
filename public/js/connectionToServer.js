@@ -62,7 +62,7 @@ socket.on('connection', () => {
       if (ClientIDs.length > numberOfStreams) {
          socket.emit('reload');
       }
-   }, 1000);
+   }, 5000);
 });
 
 socket.on('reload', () => {
