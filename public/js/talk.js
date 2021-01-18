@@ -36,24 +36,24 @@ function unmuteMyStream() {
       return;
    }
 
-   // const thisStreamEvent = connection.streamEvents[myStream.id];
+   if (myStream.isMuted) {
+      // Unmute stream
+      myStream.unmute('both');
 
-   // Unmute stream
-   myStream.unmute('both');
+      console.log('unmuted');
+      myStream.isMuted = false;
+      connection.extra.isMuted = myStream.isMuted;
+      connection.updateExtraData();
 
-   console.log('unmuted');
-   myStream.isMuted = false;
-   connection.extra.isMuted = myStream.isMuted;
-   connection.updateExtraData();
+      // Change background color
+      // document.body.style.backgroundColor = pptColor;
+      const x = document.getElementsByClassName('header');
+      for (let i = 0; i < x.length; i++) {
+         x[i].style.backgroundColor = pptColor;
+      }
 
-   // Change background color
-   // document.body.style.backgroundColor = pptColor;
-   const x = document.getElementsByClassName('header');
-   for (let i = 0; i < x.length; i++) {
-      x[i].style.backgroundColor = pptColor;
+      toggleTalk.innerHTML = 'Mic is on';
    }
-
-   toggleTalk.innerHTML = 'Mic is on';
 }
 
 function muteMyStream() {
@@ -62,24 +62,24 @@ function muteMyStream() {
       return;
    }
 
-   // const thisStreamEvent = connection.streamEvents[myStream.id];
+   if (!myStream.isMuted) {
+      // Mute stream
+      myStream.mute('both');
 
-   // Mute stream
-   myStream.mute('both');
+      console.log('muted');
+      myStream.isMuted = true;
+      connection.extra.isMuted = myStream.isMuted;
+      connection.updateExtraData();
 
-   console.log('muted');
-   myStream.isMuted = true;
-   connection.extra.isMuted = myStream.isMuted;
-   connection.updateExtraData();
+      // Change background color
+      // document.body.style.backgroundColor = bgColor;
+      const x = document.getElementsByClassName('header');
+      for (let i = 0; i < x.length; i++) {
+         x[i].style.backgroundColor = bgColor;
+      }
 
-   // Change background color
-   // document.body.style.backgroundColor = bgColor;
-   const x = document.getElementsByClassName('header');
-   for (let i = 0; i < x.length; i++) {
-      x[i].style.backgroundColor = bgColor;
+      toggleTalk.innerHTML = 'Mic is off';
    }
-
-   toggleTalk.innerHTML = 'Mic is off';
 }
 
 export {

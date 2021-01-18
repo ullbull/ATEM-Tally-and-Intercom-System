@@ -44,16 +44,10 @@ socket.on('message', (message) => {
    console.log('Received message:', message)
 });
 
+let ClientIDs = [];
 socket.on("connected clients", clientIDs => {
    users.updateUserList(clientIDs, socket.id);
-
-   // Reload page if number of clients and streams don't match
-   setTimeout(() => {
-      const numberOfStreams = connection.streamEvents.selectAll().length;
-      if (clientIDs.length > numberOfStreams) {
-         socket.emit('reload');
-      }
-   }, 5000);
+   ClientIDs = clientIDs;
 });
 
 socket.on('connection', () => {
@@ -61,6 +55,14 @@ socket.on('connection', () => {
    console.log('socket connected ', socket.id);
    tally.switcherConnected();
    document.getElementById('my-id').innerHTML = socket.id;
+
+   // Reload page if number of clients and streams don't match
+   setTimeout(() => {
+      const numberOfStreams = connection.streamEvents.selectAll().length;
+      if (ClientIDs.length > numberOfStreams) {
+         socket.emit('reload');
+      }
+   }, 1000);
 });
 
 socket.on('reload', () => {
