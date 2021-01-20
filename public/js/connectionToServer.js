@@ -1,8 +1,13 @@
 import * as users from './users.js';
 import * as tally from './tally.js';
-import * as sourceManager from './sourceManager.js';
+import * as sourceManager from './sourceKeeper.js';
 import { connection } from './connection.js';
 import * as handleConnection from './handleConnection.js';
+
+const programElement = document.getElementById('program')
+const previewElement = document.getElementById('preview')
+const socket = connection.getSocket();
+const sadEmoji = "&#128532";
 
 const ConnectionState = {
    closed: { description: 'Not connected' },
@@ -12,29 +17,27 @@ const ConnectionState = {
 };
 
 function interpretSource(sourceID, sources) {
-   if (sourceID == 1) {
-      return sources['HDMI 1'];
-   } else if (sourceID == 2) {
-      return sources['HDMI 2'];
-   } else if (sourceID == 3) {
-      return sources['HDMI 3'];
-   } else if (sourceID == 4) {
-      return sources['HDMI 4'];
-   } else if (sourceID == 5) {
-      return sources['SDI 1'];
-   } else if (sourceID == 6) {
-      return sources['SDI 2'];
-   } else if (sourceID == 7) {
-      return sources['SDI 3'];
-   } else if (sourceID == 8) {
-      return sources['SDI 4'];
+   switch (sourceID) {
+      case 1:
+         return sources['HDMI 1'];
+      case 2:
+         return sources['HDMI 2'];
+      case 3:
+         return sources['HDMI 3'];
+      case 4:
+         return sources['HDMI 4'];
+      case 5:
+         return sources['SDI 1'];
+      case 6:
+         return sources['SDI 2'];
+      case 7:
+         return sources['SDI 3'];
+      case 8:
+         return sources['SDI 4'];
+      default:
+         return sadEmoji;
    }
 }
-
-const programElement = document.getElementById('program')
-const previewElement = document.getElementById('preview')
-
-const socket = connection.getSocket();
 
 function sendData(type, payload) {
    socket.emit(type, payload);
@@ -72,20 +75,22 @@ socket.on('reload', () => {
    location.reload();
 })
 
-socket.on('ATEM', ({ program, preview }, sources) => {
-   console.log('I got this: ', { program, preview, sources })
+socket.on('program and preview', ({ program, preview }, sources) => {
+   console.log('Receiving program and preview event', { program, preview, sources })
 
    if (!program || !preview || !sources) {
-      console.error('This should not happen!', { program, preview, sources })
-      // return;
+      console.error("Couldn't get tally from ATEM switcher! Try make a camera switch on ATEM switcher", { program, preview, sources })
+      previewElement.innerHTML = "Press Cut on ATEM switcher to get tally";
+      programElement.innerHTML = sadEmoji;
+      return;
    }
 
    // Interpret program and preview sources
    program = interpretSource(program, sources);
    preview = interpretSource(preview, sources);
 
-   console.log('ATEM program:', program);
-   console.log('ATEM preview:', preview);
+   console.log('Program:', program);
+   console.log('Preview:', preview);
 
    programElement.innerHTML = program;
    previewElement.innerHTML = preview;

@@ -11,6 +11,7 @@
 </head>
 
 <body>
+   <script src="./js/dist/RTCMultiConnection.min.js"></script>
    <script src="./socket.io/socket.io.js"></script>
    <script src="./js/dist/RTCMultiConnection.min.js"></script>
 
@@ -54,6 +55,11 @@
          </div>
       </div>
    </div>
+
+   <div id="connection-lost" class="connection-lost" style="display: none;">
+      <h1 class="center">Connection lost!</h1>
+   </div>
+   
    <script src="/socket.io/socket.io.js"></script>
    <script type="module" src="./js/control.js"></script>
 </body>

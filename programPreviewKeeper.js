@@ -1,5 +1,5 @@
-let Program = 0;
-let Preview = 0;
+let Program = undefined;
+let Preview = undefined;
 
 function getProgram() {
    return Program;
@@ -16,18 +16,24 @@ function getProgPrev() {
    }
 }
 
-function setProgram(program) {
+function storeProgram(program) {
    Program = program;
 }
 
-function setPreview(preview) {
+function storePreview(preview) {
    Preview = preview;
 }
 
+function storeProgPrev(program, preview) {
+   storeProgram(program);
+   storePreview(preview);
+}
+
 module.exports = {
-   setProgram,
-   setPreview,
-   getProgPrev,
    getProgram,
    getPreview,
+   getProgPrev,
+   storeProgram,
+   storePreview,
+   storeProgPrev
 }
