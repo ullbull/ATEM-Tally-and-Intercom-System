@@ -6,7 +6,6 @@ const https = require('https');
 const fileManager = require('./fileManager.js');
 const atemManager = require('./atemManager.js');
 const ip = require('./ip.js');
-const startBrowser = require('./startBrowser.js');
 
 const port = 5000;
 const app = express();
@@ -18,8 +17,6 @@ const server = https.createServer({
    key: privateKey,
    cert: certificate
 }, app).listen(port);
-
-// const server = app.listen(port);
 
 console.log(`Server running at ${server.address().address}:${port}`);
 console.log(ip.getIp());
@@ -70,9 +67,9 @@ io.on('connection', function (socket) {
    // Send to all clients
    io.emit('connected clients', getClientIDs());
 
-   socket.on('reload', () => {
-      io.emit('reload');
-   })
+   // socket.on('reload', () => {
+   //    io.emit('reload');
+   // })
 
    // Runs when client disconnects
    socket.on('disconnect', () => {

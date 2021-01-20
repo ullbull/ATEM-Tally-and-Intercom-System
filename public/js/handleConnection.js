@@ -16,7 +16,7 @@ function setConnected(connected, message = 'Connection lost!') {
       elementHider.hideElement('connection-lost');
    }
    else {
-      console.error(`Not connected! `, error);
+      console.error(`Not connected! `, message);
       document.getElementById('connection-lost').innerHTML = message
       elementHider.unhideElement('connection-lost');
    }
@@ -35,7 +35,7 @@ async function checkConnection(interval) {
             gotResponse = true;
          })
          .catch(error => {
-            setConnected(false);
+            setConnected(false, error);
          })
 
       setTimeout(() => {

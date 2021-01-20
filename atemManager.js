@@ -1,6 +1,5 @@
-const Atem = require('./fakeAtem.js')
-// const Atem = require('atem')
-const simulateAtemSwitcher = require('./simulateAtemSwitcher.js');
+// const Atem = require('./fakeAtem.js')
+const Atem = require('atem')
 const fileManager = require('./fileManager.js');
 
 const defaultIp = '192.168.1.225'
@@ -21,7 +20,6 @@ console.log('state', atemSwitcher.state);
 setTimeout(atemSwitcher.connect, 4000);
 
 function init(io) {
-   simulateAtemSwitcher.init(io, atemSwitcher);
 
    // When a new client connects
    io.on('connection', function (socket) {
@@ -56,8 +54,8 @@ function init(io) {
       // When atem switcher is connected
       if (atemSwitcher.state === Atem.ConnectionState.open) {
          // Get program and preview from switcher
-         let program;
-         let preview;
+         let program = undefined;
+         let preview = undefined;
 
          // Save program and preview
          storeProgram(program);
@@ -117,8 +115,8 @@ function reconnect(ip) {
 
 ///////////////////////////////////////
 
-let Program;
-let Preview;
+let Program = undefined;
+let Preview = undefined;
 
 function getProgram() {
    return Program;
