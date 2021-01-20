@@ -75,7 +75,7 @@ socket.on('reload', () => {
    location.reload();
 })
 
-socket.on('ATEM', ({ program, preview }, sources) => {
+socket.on('program and preview', ({ program, preview }, sources) => {
    console.log('I got this: ', { program, preview, sources })
 
    if (!program || !preview || !sources) {

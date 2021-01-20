@@ -1,6 +1,7 @@
 // const Atem = require('./fakeAtem.js')
 const Atem = require('atem')
 const fileManager = require('./fileManager.js');
+const keeper = require('./programPreviewKeeper.js');
 
 const defaultIp = '192.168.1.225'
 
@@ -15,14 +16,9 @@ atemSwitcher.ip = config.ip || defaultIp;
 console.log(`Connecting atem at ${atemSwitcher.ip}`);
 atemSwitcher.connect()
 
-console.log('state', atemSwitcher.state);
-
-setTimeout(atemSwitcher.connect, 4000);
-
 function init(io) {
-
    // When a new client connects
-   io.on('connection', function (socket) {
+   io.on('connection', socket => {
 
       // Let client know that it is connected
       socket.emit('connection');
@@ -36,12 +32,10 @@ function init(io) {
       }
 
       socket.on('setPreview', sourceID => {
-         console.log('incoming setPreview', sourceID);
          atemSwitcher.setPreview(sourceID);
       })
 
       socket.on('cut', () => {
-         console.log('incoming cut');
          atemSwitcher.cut();
       })
 
@@ -57,19 +51,17 @@ function init(io) {
          let program = undefined;
          let preview = undefined;
 
-         // Save program and preview
-         storeProgram(program);
-         storePreview(preview);
+         // Store program and preview
+         keeper.storeProgPrev(program, preview);
 
          // Send program and preview to all clients
          sendProgPrevTo(io);
       }
    });
 
-
    atemSwitcher.on('connectionLost', () => {
       console.log("Connection Lost!")
-      io.emit('message', 'Connection to Atem switcher lost!');
+      io.emit('connectionStateChange', Atem.ConnectionState.closed);
    });
 
    atemSwitcher.on('error', e => {
@@ -78,18 +70,16 @@ function init(io) {
    });
 
    atemSwitcher.on('previewBus', source => {
-      console.log('incoming previewBus event');
       console.log('source:', source);
-      storePreview(source);
+      keeper.storePreview(source);
 
       // Send to all clients
       sendProgPrevTo(io);
    });
 
    atemSwitcher.on('programBus', source => {
-      console.log('incoming programBus event');
       console.log('source:', source);
-      storeProgram(source);
+      keeper.storeProgram(source);
 
       // Send to all clients
       sendProgPrevTo(io);
@@ -97,9 +87,7 @@ function init(io) {
 }
 
 function sendProgPrevTo(socket) {
-   const progPrev = getProgPrev();
-   console.log('sending:', progPrev);
-   socket.emit('ATEM', getProgPrev(), config.sources);
+   socket.emit('program and preview', keeper.getProgPrev(), config.sources);
 }
 
 function reconnect(ip) {
@@ -111,34 +99,6 @@ function reconnect(ip) {
 
    console.log(`Connecting atem at ${atemSwitcher.ip}`);
    atemSwitcher.connect();
-}
-
-///////////////////////////////////////
-
-let Program = undefined;
-let Preview = undefined;
-
-function getProgram() {
-   return Program;
-}
-
-function getPreview() {
-   return Preview;
-}
-
-function getProgPrev() {
-   return {
-      program: getProgram(),
-      preview: getPreview()
-   }
-}
-
-function storeProgram(program) {
-   Program = program;
-}
-
-function storePreview(preview) {
-   Preview = preview;
 }
 
 module.exports = {
