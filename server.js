@@ -113,12 +113,11 @@ app.get('/save.config', (request, response) => {
    }
 
    console.log('saving config ', config);
-
    fileManager.saveConfig(config);
 
    // Reconnect atem switcher with new ip
-   atemManager.reconnect(config.ip);
-
+   // setTimeout(atemManager.reconnect, 1000);
+   atemManager.reconnect();
    response.redirect(`/`);
 });
 

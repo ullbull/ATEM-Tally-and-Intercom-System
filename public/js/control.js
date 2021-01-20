@@ -3,6 +3,8 @@ import * as api from './api.js';
 import * as atemControl from './atemControl.js';
 import * as cts from './connectionToServer.js';
 
+buttons();
+
 async function buttons() {
    const config = await api.getConfig();
    const sourcesForm = document.getElementById('buttons');
@@ -76,8 +78,6 @@ async function buttons() {
 
    // document.getElementById('button-cut').onclick = cts.sendData('cut');
 }
-
-buttons();
 
 window.onkeyup = event => {
    atemControl.keyUp(event);

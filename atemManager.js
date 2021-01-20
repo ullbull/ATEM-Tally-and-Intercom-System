@@ -90,13 +90,16 @@ function sendProgPrevTo(socket) {
    socket.emit('program and preview', keeper.getProgPrev(), config.sources);
 }
 
-function reconnect(ip) {
-   atemSwitcher.disconnect();
-   atemSwitcher.ip = ip;
+function reconnect() {
 
    // Reload config file
    config = fileManager.loadConfig();
 
+   atemSwitcher.disconnect();
+
+   // Get saved ip address
+   atemSwitcher.ip = config.ip || defaultIp;
+   
    console.log(`Connecting atem at ${atemSwitcher.ip}`);
    atemSwitcher.connect();
 }
