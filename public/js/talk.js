@@ -14,6 +14,37 @@ if (micOn) {
    setTimeout(unmuteMyStream, 5000);
 }
 
+window.onkeydown = event => {
+   if (event.shiftKey) {
+      unmuteMyStream();
+   }
+}
+
+window.onkeyup = event => {
+   if (event.key == 'Shift') {
+      muteMyStream();
+   }
+}
+
+window.ontouchstart = event => {
+   unmuteMyStream();
+}
+
+window.ontouchend = event => {
+   muteMyStream();
+}
+
+toggleTalk.onclick = event => {
+   if (getMyStream().isMuted) {
+      unmuteMyStream();
+      // location.href='?mic-on=1';
+   }
+   else {
+      muteMyStream();
+      // location.href='/';
+   }
+}
+
 function getMyStream() {
    if (!connection.streamEvents.selectFirst({ local: true })) {
       return;
@@ -79,37 +110,6 @@ function muteMyStream() {
       }
 
       toggleTalk.innerHTML = 'Mic is off';
-   }
-}
-
-window.onkeydown = event => {
-   if (event.shiftKey) {
-      unmuteMyStream();
-   }
-}
-
-window.onkeyup = event => {
-   if (event.key == 'Shift') {
-      muteMyStream();
-   }
-}
-
-window.ontouchstart = event => {
-   unmuteMyStream();
-}
-
-window.ontouchend = event => {
-   muteMyStream();
-}
-
-toggleTalk.onclick = event => {
-   if (getMyStream().isMuted) {
-      unmuteMyStream();
-      // location.href='?mic-on=1';
-   }
-   else {
-      muteMyStream();
-      // location.href='/';
    }
 }
 
