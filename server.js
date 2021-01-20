@@ -115,9 +115,10 @@ app.get('/save.config', (request, response) => {
    console.log('saving config ', config);
    fileManager.saveConfig(config);
 
-   // Reconnect atem switcher with new ip
-   // setTimeout(atemManager.reconnect, 1000);
-   atemManager.reconnect();
+   // Reconnect atem switcher with new ip.
+   // Need timeout to make sure the new config file is saved before reconnecting
+   setTimeout(atemManager.reconnect, 1000);
+   
    response.redirect(`/`);
 });
 

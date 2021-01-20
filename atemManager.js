@@ -94,6 +94,7 @@ function reconnect() {
 
    // Reload config file
    config = fileManager.loadConfig();
+   console.log('loaded config', config);
 
    atemSwitcher.disconnect();
 
