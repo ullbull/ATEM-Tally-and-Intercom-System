@@ -3,14 +3,12 @@ import * as cts from './connectionToServer.js';
 import * as talk from './talk.js';
 import * as sourceKeeper from './sourceKeeper.js';
 
-const roomId = 'apa';
+// Open or join room
+connection.openOrJoin('apa');
 
 // Set mySource from url or
 // prompt user to choose source if source is not set
 sourceKeeper.setSource();
-
-// Open or join room
-connection.openOrJoin(roomId);
 
 connection.onMediaError = error => {
    console.error('Media Error: ', error);

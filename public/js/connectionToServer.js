@@ -76,13 +76,12 @@ socket.on('reload', () => {
 })
 
 socket.on('program and preview', ({ program, preview }, sources) => {
-   console.log('I got this: ', { program, preview, sources })
+   console.log('Receiving program and preview event', { program, preview, sources })
 
    if (!program || !preview || !sources) {
       console.error("Couldn't get tally from ATEM switcher! Try make a camera switch on ATEM switcher", { program, preview, sources })
       previewElement.innerHTML = "Press Cut on ATEM switcher to get tally";
       programElement.innerHTML = sadEmoji;
-
       return;
    }
 
@@ -90,8 +89,8 @@ socket.on('program and preview', ({ program, preview }, sources) => {
    program = interpretSource(program, sources);
    preview = interpretSource(preview, sources);
 
-   console.log('ATEM program:', program);
-   console.log('ATEM preview:', preview);
+   console.log('Program:', program);
+   console.log('Preview:', preview);
 
    programElement.innerHTML = program;
    previewElement.innerHTML = preview;
