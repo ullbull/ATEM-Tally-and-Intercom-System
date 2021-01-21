@@ -18,6 +18,8 @@ const server = https.createServer({
    cert: certificate
 }, app).listen(port);
 
+// const server = app.listen(port);
+
 console.log(`Server running at ${server.address().address}:${port}`);
 console.log(ip.getIp());
 

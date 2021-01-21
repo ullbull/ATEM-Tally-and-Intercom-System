@@ -1,5 +1,5 @@
-// const Atem = require('./fakeAtem.js')
-const Atem = require('atem')
+const Atem = require('./fakeAtem.js')
+// const Atem = require('atem')
 const fileManager = require('./fileManager.js');
 const keeper = require('./programPreviewKeeper.js');
 

@@ -16,33 +16,6 @@ const ConnectionState = {
    open: { description: 'connected' }
 };
 
-function interpretSource(sourceID, sources) {
-   switch (sourceID) {
-      case 1:
-         return sources['HDMI 1'];
-      case 2:
-         return sources['HDMI 2'];
-      case 3:
-         return sources['HDMI 3'];
-      case 4:
-         return sources['HDMI 4'];
-      case 5:
-         return sources['SDI 1'];
-      case 6:
-         return sources['SDI 2'];
-      case 7:
-         return sources['SDI 3'];
-      case 8:
-         return sources['SDI 4'];
-      default:
-         return sadEmoji;
-   }
-}
-
-function sendData(type, payload) {
-   socket.emit(type, payload);
-}
-
 socket.on('message', (message) => {
    console.log('Received message:', message)
 });
@@ -132,6 +105,32 @@ socket.on('disconnect', event => {
    handleConnection.setConnected(false);
 });
 
+function interpretSource(sourceID, sources) {
+   switch (sourceID) {
+      case 1:
+         return sources['HDMI 1'];
+      case 2:
+         return sources['HDMI 2'];
+      case 3:
+         return sources['HDMI 3'];
+      case 4:
+         return sources['HDMI 4'];
+      case 5:
+         return sources['SDI 1'];
+      case 6:
+         return sources['SDI 2'];
+      case 7:
+         return sources['SDI 3'];
+      case 8:
+         return sources['SDI 4'];
+      default:
+         return sadEmoji;
+   }
+}
+
+function sendData(type, payload) {
+   socket.emit(type, payload);
+}
 
 export {
    sendData
