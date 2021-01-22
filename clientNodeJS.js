@@ -1,6 +1,7 @@
+var robot = require("robotjs");
 const io = require('socket.io-client');
 
-const socket = io('https://localhost:5000/', {rejectUnauthorized: false});
+const socket = io('https://localhost:5000/', { rejectUnauthorized: false });
 
 const mySourceID = 5;
 
@@ -67,6 +68,21 @@ function interpretSource(sourceID, sources) {
 var Gpio = require('onoff').Gpio;
 var redLED = new Gpio(17, 'out');
 var greenLED = new Gpio(27, 'out');
+var pushButton = new Gpio(22, 'in', 'both'); // 'both' button presses, and releases should be handled
+
+pushButton.watch(function (err, value) { //Watch for hardware interrupts on pushButton GPIO, specify callback function
+   if (err) { //if an error
+      console.error('There was an error', err); //output error message to console
+      return;
+   }
+
+   if (value == 1) {
+      robot.keyToggle('shift', 'down');
+   }
+   if (value == 0) {
+      robot.keyToggle('shift', 'up');
+   }
+});
 
 function getMySource(sources) {
    return interpretSource(mySourceID, sources);
@@ -79,7 +95,7 @@ function camOnProgram() {
 }
 
 function camOnPreview() {
-   console.log("PREVIWE");
+   console.log("PREVIEW");
    greenLED.writeSync(1);
    redLED.writeSync(0);
 }
@@ -95,9 +111,10 @@ function unexportOnClose() {
    greenLED.writeSync(0);
    redLED.writeSync(0);
 
-   // Unexport LED GPIO to free resources
+   // Unexport GPIO to free resources
    greenLED.unexport();
    redLED.unexport();
+   pushButton.unexport();
 
    socket.close();
- };
+};
