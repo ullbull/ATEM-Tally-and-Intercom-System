@@ -4,6 +4,8 @@ const socket = io('https://localhost:5000/', {rejectUnauthorized: false});
 
 const mySourceID = 5;
 
+process.on('SIGINT', unexportOnClose); //function to run when user closes using ctrl+c
+
 socket.on('connect', () => {
    console.log('Socket connected!', socket.id);
 });
@@ -62,19 +64,38 @@ function interpretSource(sourceID, sources) {
    }
 }
 
+var Gpio = require('onoff').Gpio;
+var greenLED = new Gpio(4, 'out');
+var redLED = new Gpio(17, 'out');
+
 function getMySource(sources) {
    return interpretSource(mySourceID, sources);
 }
 
 function camOnProgram() {
    console.log("PROGRAM");
+   greenLED.writeSync(0);
+   redLED.writeSync(1);
 }
 
 function camOnPreview() {
    console.log("PREVIWE");
+   greenLED.writeSync(1);
+   redLED.writeSync(0);
 }
 
 function camFree() {
    console.log("FREE");
+   greenLED.writeSync(0);
+   redLED.writeSync(0);
 }
 
+function unexportOnClose() {
+   // Turn off LEDs
+   greenLED.writeSync(0);
+   redLED.writeSync(0);
+
+   // Unexport LED GPIO to free resources
+   greenLED.unexport();
+   redLED.unexport();
+ };
