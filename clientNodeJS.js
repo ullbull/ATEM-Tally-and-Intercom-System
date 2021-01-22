@@ -65,8 +65,8 @@ function interpretSource(sourceID, sources) {
 }
 
 var Gpio = require('onoff').Gpio;
-var greenLED = new Gpio(4, 'out');
 var redLED = new Gpio(17, 'out');
+var greenLED = new Gpio(27, 'out');
 
 function getMySource(sources) {
    return interpretSource(mySourceID, sources);
@@ -98,4 +98,6 @@ function unexportOnClose() {
    // Unexport LED GPIO to free resources
    greenLED.unexport();
    redLED.unexport();
+
+   socket.close();
  };
