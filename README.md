@@ -8,4 +8,10 @@ To start the server run node server.js
 
 To connect a client open a web browser and enter https://[ip address to the server]:5000
 
-To autostart server on a Raspberry Pi on boot, place the file rc.local in /etc/
+### Autostart server on boot
+Place the file server.service in /lib/systemd/system/ and enter the folowing commands
+
+```console
+sudo systemctl daemon-reload
+sudo systemctl enable sample.service
+```
