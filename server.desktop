@@ -1,0 +1,4 @@
+[Desktop Entry]
+Type=Application
+Name=Server
+Exec=/home/pi/ATEM-Tally-and-Intercom-System/run-server.sh
